@@ -1,0 +1,80 @@
+<section class="card shadow-sm">
+  <div class="card-body p-4">
+    <p class="text-primary fw-bold text-uppercase small mb-1">Crear cuenta</p>
+    <h1 class="h3 mb-2">Registro</h1>
+    <p class="text-secondary">Completá tus datos para crear tu perfil de usuario.</p>
+
+    <form class="row g-3" [formGroup]="registroForm" (ngSubmit)="onSubmit()" novalidate>
+      <div class="col-md-6">
+        <label class="form-label">Nombre</label>
+        <input class="form-control" type="text" formControlName="nombre" />
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Apellido</label>
+        <input class="form-control" type="text" formControlName="apellido" />
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Correo</label>
+        <input class="form-control" type="email" formControlName="correo" placeholder="email@dominio.com" />
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Nombre de usuario</label>
+        <input class="form-control" type="text" formControlName="nombreUsuario" />
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Contrasena</label>
+        <input class="form-control" type="password" formControlName="password" />
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Repetir contrasena</label>
+        <input class="form-control" type="password" formControlName="repetirPassword" />
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Fecha de nacimiento</label>
+        <input class="form-control" type="date" formControlName="fechaNacimiento" />
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Imagen de perfil</label>
+        <input class="form-control" type="file" accept="image/*" formControlName="imagenPerfil" />
+      </div>
+
+      <div class="col-12">
+        <label class="form-label">Descripcion breve</label>
+        <textarea
+          class="form-control"
+          rows="4"
+          formControlName="descripcion"
+          placeholder="Contanos algo sobre vos"
+        ></textarea>
+      </div>
+
+      <div class="col-12">
+      @if (hasRequiredErrors()) {
+        <div class="alert alert-danger py-2 mb-2">Todos los campos son obligatorios.</div>
+      }
+      @if (registroForm.controls.correo.touched && registroForm.controls.correo.hasError('email')) {
+        <div class="alert alert-danger py-2 mb-2">El correo debe tener un formato valido.</div>
+      }
+      @if (registroForm.controls.password.touched && registroForm.controls.password.hasError('pattern')) {
+        <div class="alert alert-danger py-2 mb-2">La contrasena debe tener al menos 8 caracteres, una mayuscula y un numero.</div>
+      }
+      @if (registroForm.touched && registroForm.hasError('passwordMismatch')) {
+        <div class="alert alert-danger py-2 mb-2">Las contrasenas no coinciden.</div>
+      }
+      </div>
+
+      <div class="col-12">
+        <button class="btn btn-primary w-100" type="submit">Crear cuenta</button>
+      </div>
+    </form>
+
+    <p class="text-secondary mb-0 mt-3">Ya tenes cuenta? <a routerLink="/login">Inicia sesion</a></p>
+  </div>
+</section>

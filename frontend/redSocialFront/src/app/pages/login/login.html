@@ -1,0 +1,42 @@
+<section class="card shadow-sm mx-auto" style="max-width: 460px;">
+  <div class="card-body p-4">
+    <p class="text-primary fw-bold text-uppercase small mb-1">Bienvenido</p>
+    <h1 class="h3 mb-2">Iniciar sesion</h1>
+    <p class="text-secondary">Ingresa con tu correo o nombre de usuario.</p>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+      <div class="mb-3">
+        <label class="form-label">Correo o usuario</label>
+        <input
+          class="form-control"
+          type="text"
+          formControlName="identifier"
+          placeholder="ej: emmanuel o email@dominio.com"
+        />
+      </div>
+    @if (showError('identifier')) {
+      <div class="alert alert-danger py-2">Este campo es obligatorio.</div>
+    }
+
+      <div class="mb-3">
+        <label class="form-label">Contrasena</label>
+        <input
+          class="form-control"
+          type="password"
+          formControlName="password"
+          placeholder="Minimo 8 caracteres"
+        />
+      </div>
+    @if (showError('password', 'required')) {
+      <div class="alert alert-danger py-2">La contrasena es obligatoria.</div>
+    }
+    @if (showError('password', 'pattern')) {
+      <div class="alert alert-danger py-2">Debe tener al menos 8 caracteres, una mayuscula y un numero.</div>
+    }
+
+      <button class="btn btn-primary w-100" type="submit">Ingresar</button>
+    </form>
+
+    <p class="text-secondary mb-0 mt-3">No tenes cuenta? <a routerLink="/registro">Registrate</a></p>
+  </div>
+</section>
