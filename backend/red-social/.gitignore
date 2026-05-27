@@ -46,6 +46,11 @@ lerna-debug.log*
 .temp
 .tmp
 
+# uploads (imagenes de perfil)
+uploads/*
+!uploads/perfiles/
+!uploads/perfiles/.gitkeep
+
 # Runtime data
 pids
 *.pid
