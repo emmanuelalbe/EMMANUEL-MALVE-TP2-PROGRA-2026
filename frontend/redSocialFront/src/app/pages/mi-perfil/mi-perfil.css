@@ -1,0 +1,12 @@
+.perfil-imagen {
+  border-radius: 50%;
+  height: 140px;
+  object-fit: cover;
+  width: 140px;
+}
+
+.perfil-sin-imagen {
+  background-color: #e9ecef;
+  color: #6c757d;
+  font-weight: 600;
+}

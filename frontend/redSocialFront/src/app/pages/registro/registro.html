@@ -40,11 +40,6 @@
         <input class="form-control" type="date" formControlName="fechaNacimiento" />
       </div>
 
-      <div class="col-md-6">
-        <label class="form-label">Imagen de perfil</label>
-        <input class="form-control" type="file" accept="image/*" formControlName="imagenPerfil" />
-      </div>
-
       <div class="col-12">
         <label class="form-label">Descripcion breve</label>
         <textarea
@@ -68,10 +63,15 @@
       @if (registroForm.touched && registroForm.hasError('passwordMismatch')) {
         <div class="alert alert-danger py-2 mb-2">Las contrasenas no coinciden.</div>
       }
+      @if (mensajeError) {
+        <div class="alert alert-danger py-2 mb-2">{{ mensajeError }}</div>
+      }
       </div>
 
       <div class="col-12">
-        <button class="btn btn-primary w-100" type="submit">Crear cuenta</button>
+        <button class="btn btn-primary w-100" type="submit" [disabled]="cargando">
+          {{ cargando ? 'Creando cuenta...' : 'Crear cuenta' }}
+        </button>
       </div>
     </form>
 

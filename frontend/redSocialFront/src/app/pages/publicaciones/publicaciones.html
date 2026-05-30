@@ -1,1 +1,52 @@
-<h1 class="h3">Publicaciones</h1>
+<div class="d-flex flex-column flex-md-row justify-content-between gap-3 mb-4">
+  <div>
+    <h1 class="h3 mb-1">Publicaciones</h1>
+    <p class="text-secondary mb-0">Listado de publicaciones conectado al backend.</p>
+  </div>
+
+  <div class="orden-publicaciones">
+    <label class="form-label" for="orden">Ordenar por</label>
+    <select class="form-select" id="orden" [value]="orden" (change)="cambiarOrden($event)">
+      <option value="fecha">Fecha</option>
+      <option value="likes">Cantidad de me gusta</option>
+    </select>
+  </div>
+</div>
+
+@if (mensajeError) {
+  <div class="alert alert-danger">{{ mensajeError }}</div>
+}
+
+@if (cargando) {
+  <div class="alert alert-info">Cargando publicaciones...</div>
+}
+
+@if (!cargando && publicaciones.length === 0 && !mensajeError) {
+  <div class="alert alert-secondary">Todavia no hay publicaciones para mostrar.</div>
+}
+
+@for (publicacion of publicaciones; track publicacion._id) {
+  <app-publicacion
+    [publicacion]="publicacion"
+    [usuarioActual]="usuarioActual"
+    (cambiarMeGusta)="cambiarMeGusta($event)"
+    (eliminar)="eliminarPublicacion($event)"
+  />
+}
+
+<div class="d-flex justify-content-between align-items-center mt-4">
+  <button class="btn btn-outline-primary" type="button" [disabled]="offset === 0 || cargando" (click)="paginaAnterior()">
+    Anterior
+  </button>
+
+  <span class="text-secondary">Pagina {{ paginaActual }}</span>
+
+  <button
+    class="btn btn-outline-primary"
+    type="button"
+    [disabled]="!hayPaginaSiguiente || cargando"
+    (click)="paginaSiguiente()"
+  >
+    Siguiente
+  </button>
+</div>

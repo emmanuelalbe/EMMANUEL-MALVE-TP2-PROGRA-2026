@@ -1,0 +1,60 @@
+<article class="card shadow-sm mb-3">
+  @if (publicacion.imagenUrl) {
+    <img
+      class="card-img-top publicacion-imagen"
+      [src]="imagenPublicacion()"
+      [alt]="publicacion.titulo"
+    />
+  }
+
+  <div class="card-body">
+    <div class="d-flex justify-content-between gap-3 mb-2">
+      <div>
+        <h2 class="h5 mb-1">{{ publicacion.titulo }}</h2>
+        <p class="text-secondary small mb-0">
+          {{ publicacion.usuario.nombre }} {{ publicacion.usuario.apellido }}
+          · {{ publicacion.fechaCreacion | date: 'short' }}
+        </p>
+      </div>
+
+      @if (puedeEliminar) {
+        <button class="btn btn-outline-danger btn-sm" type="button" (click)="eliminar.emit(publicacion)">
+          Eliminar
+        </button>
+      }
+    </div>
+
+    <p class="mb-3">{{ publicacion.descripcion }}</p>
+
+    <div class="d-flex align-items-center gap-2">
+      <button
+        class="btn btn-sm"
+        [class.btn-primary]="dioMeGusta"
+        [class.btn-outline-primary]="!dioMeGusta"
+        type="button"
+        [disabled]="!usuarioActual"
+        (click)="cambiarMeGusta.emit(publicacion)"
+      >
+        {{ dioMeGusta ? 'Quitar me gusta' : 'Me gusta' }}
+      </button>
+      <span class="text-secondary small">
+        {{ publicacion.cantidadMeGusta }} me gusta
+      </span>
+    </div>
+
+    @if (publicacion.comentarios.length > 0) {
+      <hr />
+      <h3 class="h6">Comentarios</h3>
+      <div class="d-grid gap-2">
+        @for (comentario of publicacion.comentarios; track comentario._id) {
+          <div class="border rounded p-2">
+            <p class="mb-1">{{ comentario.texto }}</p>
+            <p class="text-secondary small mb-0">
+              {{ comentario.usuario.nombre }} · {{ comentario.fecha | date: 'short' }}
+            </p>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</article>

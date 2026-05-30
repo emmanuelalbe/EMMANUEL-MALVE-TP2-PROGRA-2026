@@ -1,1 +1,69 @@
-<h1 class="h3">Mi perfil</h1>
+<h1 class="h3 mb-4">Mi perfil</h1>
+
+@if (!usuarioActual) {
+  <div class="alert alert-warning">Tenes que iniciar sesion para ver tu perfil.</div>
+}
+
+@if (usuarioActual) {
+  <section class="card shadow-sm mb-4">
+    <div class="card-body">
+      <div class="d-flex flex-column flex-md-row gap-4">
+        @if (imagenPerfilUrl()) {
+          <img
+            class="perfil-imagen"
+            [src]="imagenPerfilUrl()"
+            [alt]="usuarioActual.nombre + ' ' + usuarioActual.apellido"
+          />
+        } @else {
+          <div class="perfil-imagen perfil-sin-imagen d-flex align-items-center justify-content-center">
+            Sin foto
+          </div>
+        }
+
+        <div class="flex-grow-1">
+          <h2 class="h4 mb-1">{{ usuarioActual.nombre }} {{ usuarioActual.apellido }}</h2>
+          <p class="text-secondary mb-3">@{{ usuarioActual.nombreUsuario }}</p>
+
+          <dl class="row mb-0">
+            <dt class="col-sm-4">Correo</dt>
+            <dd class="col-sm-8">{{ usuarioActual.correo }}</dd>
+
+            <dt class="col-sm-4">Fecha de nacimiento</dt>
+            <dd class="col-sm-8">{{ usuarioActual.fechaNacimiento | date: 'longDate' }}</dd>
+
+            <dt class="col-sm-4">Perfil</dt>
+            <dd class="col-sm-8">{{ usuarioActual.perfil }}</dd>
+
+            <dt class="col-sm-4">Descripcion</dt>
+            <dd class="col-sm-8">{{ usuarioActual.descripcion }}</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h4 mb-3">Mis ultimas 3 publicaciones</h2>
+
+    @if (mensajeError) {
+      <div class="alert alert-danger">{{ mensajeError }}</div>
+    }
+
+    @if (cargando) {
+      <div class="alert alert-info">Cargando publicaciones...</div>
+    }
+
+    @if (!cargando && ultimasPublicaciones.length === 0 && !mensajeError) {
+      <div class="alert alert-secondary">Todavia no tenes publicaciones.</div>
+    }
+
+    @for (publicacion of ultimasPublicaciones; track publicacion._id) {
+      <app-publicacion
+        [publicacion]="publicacion"
+        [usuarioActual]="usuarioActual"
+        (cambiarMeGusta)="cambiarMeGusta($event)"
+        (eliminar)="eliminarPublicacion($event)"
+      />
+    }
+  </section>
+}
