@@ -11,7 +11,9 @@ import { AutenticacionService } from '../../services/autenticacion.service';
   styleUrl: './login.css',
 })
 export class LoginComponent {
+  
   private readonly formBuilder = inject(FormBuilder);
+
   private readonly autenticacionService = inject(AutenticacionService);
   private readonly router = inject(Router);
   private readonly passwordPattern = /^(?=.*[A-Z])(?=.*\d).{8,}$/;

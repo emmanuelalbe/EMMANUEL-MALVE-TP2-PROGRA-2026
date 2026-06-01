@@ -8,7 +8,7 @@ import { Usuario } from '../models/usuario';
 @Injectable({ providedIn: 'root' })
 export class PublicacionesService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = `${API_URL}/post`;
+  private readonly baseUrl = `${API_URL}/publicaciones`;
 
   listar(params: ListarPublicacionesParams): Observable<Publicacion[]> {
     let httpParams = new HttpParams()

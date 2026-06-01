@@ -5,7 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AutenticacionModule } from './autenticacion/autenticacion.module';
-import { PostModule } from './post/post.module';
+import { PublicacionesModule } from './publicaciones/publicaciones.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
 
 @Module({
@@ -21,7 +21,7 @@ import { UsuariosModule } from './usuarios/usuarios.module';
     }),
     UsuariosModule,
     AutenticacionModule,
-    PostModule,
+    PublicacionesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
