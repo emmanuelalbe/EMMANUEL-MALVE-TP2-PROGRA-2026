@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Headers,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -39,5 +40,27 @@ export class AutenticacionController {
   @Post('/login')
   login(@Body() usuario: UsuarioLoginDTO) {
     return this.autenticacionService.login(usuario);
+  }
+
+  @Post('/autorizar')
+  autorizar(@Body('token') token: string, @Headers('authorization') authorization = '') {
+    return this.autenticacionService.autorizar(
+      this.obtenerToken(token, authorization),
+    );
+  }
+
+  @Post('/refrescar')
+  refrescar(@Body('token') token: string, @Headers('authorization') authorization = '') {
+    return this.autenticacionService.refrescar(
+      this.obtenerToken(token, authorization),
+    );
+  }
+
+  private obtenerToken(token: string, authorization: string) {
+    if (token) {
+      return token;
+    }
+
+    return authorization.replace('Bearer ', '');
   }
 }

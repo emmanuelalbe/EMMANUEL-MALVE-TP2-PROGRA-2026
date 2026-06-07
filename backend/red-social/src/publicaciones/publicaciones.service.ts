@@ -11,6 +11,7 @@ import { CreateComentarioDto } from './dto/create-comentario.dto';
 import { CreatePublicacionDto } from './dto/create-publicacion.dto';
 import { EliminarPublicacionDto } from './dto/eliminar-publicacion.dto';
 import { MeGustaDto } from './dto/me-gusta.dto';
+import { UpdateComentarioDto } from './dto/update-comentario.dto';
 import {
   ComentarioPublicacion,
   Publicacion,
@@ -158,10 +159,12 @@ export class PublicacionesService {
       throw new BadRequestException('El usuario no existe');
     }
 
+    publicacion.comentarios = publicacion.comentarios ?? [];
     publicacion.comentarios.push({
       texto: datos.texto,
       usuarioId: datos.usuarioId,
       fecha: new Date(),
+      modificado: false,
     });
 
     await this.publicacionModel.findByIdAndUpdate(id, {
@@ -169,6 +172,50 @@ export class PublicacionesService {
     });
 
     return this.findOne(id);
+  }
+
+  async listarComentarios(id: string, offset = '0', limit = '5') {
+    const publicacion = await this.buscarPublicacion(id);
+    const desde = Math.max(Number(offset) || 0, 0);
+    const cantidad = Math.min(Math.max(Number(limit) || 5, 1), 20);
+    const comentarios = [...(publicacion.comentarios ?? [])].sort(
+      (a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime(),
+    );
+
+    return Promise.all(
+      comentarios
+        .slice(desde, desde + cantidad)
+        .map((comentario) =>
+          this.formatearComentario(comentario as ComentarioConId),
+        ),
+    );
+  }
+
+  async modificarComentario(
+    id: string,
+    comentarioId: string,
+    datos: UpdateComentarioDto,
+  ) {
+    const publicacion = await this.buscarPublicacion(id);
+    const comentarios = publicacion.comentarios ?? [];
+    const comentario = comentarios.find(
+      (item) => String(item._id) === comentarioId,
+    );
+
+    if (!comentario) {
+      throw new NotFoundException('El comentario no existe');
+    }
+
+    if (comentario.usuarioId !== datos.usuarioId) {
+      throw new ForbiddenException('No podes modificar este comentario');
+    }
+
+    comentario.texto = datos.texto;
+    comentario.modificado = true;
+
+    await this.publicacionModel.findByIdAndUpdate(id, { comentarios });
+
+    return this.formatearComentario(comentario as ComentarioConId);
   }
 
   private async buscarPublicacion(id: string) {
@@ -185,9 +232,13 @@ export class PublicacionesService {
     const publicacionObjeto = publicacion.toObject();
     const usuario = await this.usuarioModel.findById(publicacionObjeto.usuarioId);
     const comentarios = await Promise.all(
-      (publicacionObjeto.comentarios ?? []).map((comentario) =>
-        this.formatearComentario(comentario as ComentarioConId),
-      ),
+      (publicacionObjeto.comentarios ?? [])
+        .sort(
+          (a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime(),
+        )
+        .map((comentario) =>
+          this.formatearComentario(comentario as ComentarioConId),
+        ),
     );
 
     return {
@@ -212,6 +263,7 @@ export class PublicacionesService {
       _id: String(comentario._id),
       texto: comentario.texto,
       fecha: comentario.fecha,
+      modificado: comentario.modificado ?? false,
       usuario: usuario
         ? this.usuarioSinContraseña(usuario as DocumentoConObjeto<Usuario>)
         : this.usuarioNoEncontrado(comentario.usuarioId),

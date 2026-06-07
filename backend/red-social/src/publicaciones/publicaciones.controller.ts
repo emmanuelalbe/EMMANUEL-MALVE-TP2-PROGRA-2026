@@ -6,6 +6,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Query,
   UploadedFile,
   UseInterceptors,
@@ -15,6 +16,7 @@ import { CreateComentarioDto } from './dto/create-comentario.dto';
 import { CreatePublicacionDto } from './dto/create-publicacion.dto';
 import { EliminarPublicacionDto } from './dto/eliminar-publicacion.dto';
 import { MeGustaDto } from './dto/me-gusta.dto';
+import { UpdateComentarioDto } from './dto/update-comentario.dto';
 import { PublicacionesService } from './publicaciones.service';
 
 const TAMAÑO_MAXIMO_IMAGEN = 2 * 1024 * 1024;
@@ -67,6 +69,24 @@ export class PublicacionesController {
   @Post(':id/comentarios')
   comentar(@Param('id') id: string, @Body() datos: CreateComentarioDto) {
     return this.publicacionesService.comentar(id, datos);
+  }
+
+  @Get(':id/comentarios')
+  listarComentarios(
+    @Param('id') id: string,
+    @Query('offset') offset?: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.publicacionesService.listarComentarios(id, offset, limit);
+  }
+
+  @Put(':id/comentarios/:comentarioId')
+  modificarComentario(
+    @Param('id') id: string,
+    @Param('comentarioId') comentarioId: string,
+    @Body() datos: UpdateComentarioDto,
+  ) {
+    return this.publicacionesService.modificarComentario(id, comentarioId, datos);
   }
 
   @Delete(':id/me-gusta')

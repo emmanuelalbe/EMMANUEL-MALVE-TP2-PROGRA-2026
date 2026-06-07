@@ -3,6 +3,8 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
@@ -10,11 +12,20 @@ import { CloudinaryService } from '../publicaciones/cloudinary.service';
 import { Usuario } from './usuario.schema';
 import { UsuarioLoginDTO, UsuarioRegistroDTO } from './usuario.dto';
 
+type TokenPayload = {
+  sub: string;
+  correo: string;
+  nombreUsuario: string;
+  perfil: string;
+};
+
 @Injectable()
 export class AutenticacionService {
   constructor(
     @InjectModel(Usuario.name) private readonly usuarioModel: Model<Usuario>,
     private readonly cloudinaryService: CloudinaryService,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
   async registrar(
@@ -60,7 +71,7 @@ export class AutenticacionService {
       perfil: 'usuario',
     });
 
-    return this.sinContraseña(usuarioCreado);
+    return this.respuestaConToken(usuarioCreado);
   }
 
   async login(usuario: UsuarioLoginDTO) {
@@ -84,7 +95,66 @@ export class AutenticacionService {
       throw new UnauthorizedException('Usuario o contraseña incorrectos');
     }
 
-    return this.sinContraseña(usuarioEncontrado);
+    return this.respuestaConToken(usuarioEncontrado);
+  }
+
+  async autorizar(token: string) {
+    const payload = await this.validarToken(token);
+    const usuario = await this.usuarioModel.findById(payload.sub);
+
+    if (!usuario) {
+      throw new UnauthorizedException('Token invalido');
+    }
+
+    return this.sinContraseña(usuario);
+  }
+
+  async refrescar(token: string) {
+    const payload = await this.validarToken(token);
+
+    return {
+      token: await this.generarToken({
+        sub: payload.sub,
+        correo: payload.correo,
+        nombreUsuario: payload.nombreUsuario,
+        perfil: payload.perfil,
+      }),
+    };
+  }
+
+  private async respuestaConToken(usuario: Usuario & { _id: unknown }) {
+    const usuarioSinContraseña = this.sinContraseña(usuario);
+
+    return {
+      ...usuarioSinContraseña,
+      token: await this.generarToken({
+        sub: String(usuario._id),
+        correo: usuario.correo,
+        nombreUsuario: usuario.nombreUsuario,
+        perfil: usuario.perfil,
+      }),
+    };
+  }
+
+  private generarToken(payload: TokenPayload) {
+    return this.jwtService.signAsync(payload, {
+      secret: this.configService.get<string>('JWT_SECRET') ?? 'secreto-tp',
+      expiresIn: '15m',
+    });
+  }
+
+  private async validarToken(token: string) {
+    if (!token) {
+      throw new UnauthorizedException('Token requerido');
+    }
+
+    try {
+      return await this.jwtService.verifyAsync<TokenPayload>(token, {
+        secret: this.configService.get<string>('JWT_SECRET') ?? 'secreto-tp',
+      });
+    } catch {
+      throw new UnauthorizedException('Token invalido o vencido');
+    }
   }
 
   private sinContraseña(usuario: Usuario & { toObject?: () => Record<string, unknown> }) {

@@ -5,6 +5,7 @@ export class ComentarioPublicacion {
   texto: string;
   usuarioId: string;
   fecha: Date;
+  modificado: boolean;
 }
 
 @Schema()
@@ -36,6 +37,7 @@ export class Publicacion {
         texto: String,
         usuarioId: String,
         fecha: { type: Date, default: Date.now },
+        modificado: { type: Boolean, default: false },
       },
     ],
     default: [],
