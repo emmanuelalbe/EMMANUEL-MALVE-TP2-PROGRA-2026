@@ -40,6 +40,17 @@
         <input class="form-control" type="date" formControlName="fechaNacimiento" />
       </div>
 
+      <div class="col-md-6">
+        <label class="form-label" for="imagenPerfil">Foto de perfil</label>
+        <input
+          class="form-control"
+          id="imagenPerfil"
+          type="file"
+          accept="image/png,image/jpg,image/jpeg"
+          (change)="seleccionarImagenPerfil($event)"
+        />
+      </div>
+
       <div class="col-12">
         <label class="form-label">Descripcion breve</label>
         <textarea

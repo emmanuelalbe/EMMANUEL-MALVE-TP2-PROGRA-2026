@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { obtenerMensajeError } from '../../core/http-error';
 import { PublicacionComponent } from '../../components/publicacion/publicacion';
 import { OrdenPublicaciones, Publicacion } from '../../models/publicacion';
@@ -8,15 +9,21 @@ import { PublicacionesService } from '../../services/publicaciones.service';
 
 @Component({
   selector: 'app-publicaciones',
-  imports: [PublicacionComponent],
+  imports: [PublicacionComponent, ReactiveFormsModule],
   templateUrl: './publicaciones.html',
   styleUrl: './publicaciones.css',
 })
 export class PublicacionesComponent {
   private readonly publicacionesService = inject(PublicacionesService);
   private readonly autenticacionService = inject(AutenticacionService);
+  private readonly formBuilder = inject(FormBuilder);
 
   protected publicaciones: Publicacion[] = [];
+  protected imagenPublicacion: File | null = null;
+  protected readonly publicacionForm = this.formBuilder.nonNullable.group({
+    titulo: ['', Validators.required],
+    descripcion: ['', Validators.required],
+  });
   protected usuarioActual: Usuario | null = this.autenticacionService.obtenerSesion();
   protected orden: OrdenPublicaciones = 'fecha';
   protected offset = 0;
@@ -94,6 +101,73 @@ export class PublicacionesComponent {
         this.mensajeError = obtenerMensajeError(error);
       },
     });
+  }
+
+  protected seleccionarImagenPublicacion(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.imagenPublicacion = input.files?.[0] ?? null;
+  }
+
+  protected crearPublicacion(): void {
+    if (this.publicacionForm.invalid) {
+      this.publicacionForm.markAllAsTouched();
+      return;
+    }
+
+    const usuarioId = this.usuarioActual?._id;
+
+    if (!usuarioId) {
+      this.mensajeError = 'Tenes que iniciar sesion para crear una publicacion.';
+      return;
+    }
+
+    const datos = this.publicacionForm.getRawValue();
+    const formData = new FormData();
+
+    formData.append('titulo', datos.titulo);
+    formData.append('descripcion', datos.descripcion);
+    formData.append('usuarioId', usuarioId);
+
+    if (this.imagenPublicacion) {
+      formData.append('imagen', this.imagenPublicacion);
+    }
+
+    this.publicacionesService.crear(formData).subscribe({
+      next: () => {
+        this.publicacionForm.reset();
+        this.imagenPublicacion = null;
+        this.offset = 0;
+        this.cargarPublicaciones();
+      },
+      error: (error) => {
+        this.mensajeError = obtenerMensajeError(error);
+      },
+    });
+  }
+
+  protected comentarPublicacion(evento: {
+    publicacion: Publicacion;
+    texto: string;
+  }): void {
+    const usuarioId = this.usuarioActual?._id;
+
+    if (!usuarioId) {
+      this.mensajeError = 'Tenes que iniciar sesion para comentar.';
+      return;
+    }
+
+    this.publicacionesService
+      .comentar(evento.publicacion._id, usuarioId, evento.texto)
+      .subscribe({
+        next: (publicacionActualizada) => {
+          this.publicaciones = this.publicaciones.map((item) =>
+            item._id === publicacionActualizada._id ? publicacionActualizada : item,
+          );
+        },
+        error: (error) => {
+          this.mensajeError = obtenerMensajeError(error);
+        },
+      });
   }
 
   protected get paginaActual(): number {

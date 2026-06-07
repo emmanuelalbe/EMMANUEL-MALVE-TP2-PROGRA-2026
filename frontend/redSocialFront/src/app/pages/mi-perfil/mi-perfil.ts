@@ -86,6 +86,31 @@ export class MiPerfilComponent {
     });
   }
 
+  protected comentarPublicacion(evento: {
+    publicacion: Publicacion;
+    texto: string;
+  }): void {
+    const usuarioId = this.usuarioActual?._id;
+
+    if (!usuarioId) {
+      this.mensajeError = 'Tenes que iniciar sesion para comentar.';
+      return;
+    }
+
+    this.publicacionesService
+      .comentar(evento.publicacion._id, usuarioId, evento.texto)
+      .subscribe({
+        next: (publicacionActualizada) => {
+          this.ultimasPublicaciones = this.ultimasPublicaciones.map((item) =>
+            item._id === publicacionActualizada._id ? publicacionActualizada : item,
+          );
+        },
+        error: (error) => {
+          this.mensajeError = obtenerMensajeError(error);
+        },
+      });
+  }
+
   private cargarUltimasPublicaciones(): void {
     const usuarioId = this.usuarioActual?._id;
 

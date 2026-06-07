@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_URL } from '../core/api.config';
-import { LoginRequest, RegistroRequest, Usuario } from '../models/usuario';
+import { LoginRequest, Usuario } from '../models/usuario';
 
 const USUARIO_STORAGE_KEY = 'usuario';
 
@@ -15,7 +15,7 @@ export class AutenticacionService {
     return this.http.post<Usuario>(`${this.baseUrl}/login`, datos);
   }
 
-  registrar(datos: RegistroRequest): Observable<Usuario> {
+  registrar(datos: FormData): Observable<Usuario> {
     return this.http.post<Usuario>(`${this.baseUrl}/registro`, datos);
   }
 

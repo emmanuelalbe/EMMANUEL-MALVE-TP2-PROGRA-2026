@@ -1,14 +1,39 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { AutenticacionService } from './autenticacion.service';
 import { UsuarioLoginDTO, UsuarioRegistroDTO } from './usuario.dto';
+
+const TAMAÑO_MAXIMO_IMAGEN = 2 * 1024 * 1024;
+const TIPOS_IMAGEN_PERMITIDOS = ['image/png', 'image/jpg', 'image/jpeg'];
 
 @Controller('autenticacion')
 export class AutenticacionController {
   constructor(private readonly autenticacionService: AutenticacionService) {}
 
   @Post('/registro')
-  registrar(@Body() usuario: UsuarioRegistroDTO) {
-    return this.autenticacionService.registrar(usuario);
+  @UseInterceptors(FileInterceptor('imagenPerfil'))
+  registrar(
+    @Body() usuario: UsuarioRegistroDTO,
+    @UploadedFile() imagenPerfil?: Express.Multer.File,
+  ) {
+    if (imagenPerfil) {
+      if (imagenPerfil.size > TAMAÑO_MAXIMO_IMAGEN) {
+        throw new BadRequestException('archivo muy grande');
+      }
+
+      if (!TIPOS_IMAGEN_PERMITIDOS.includes(imagenPerfil.mimetype)) {
+        throw new BadRequestException('tipo no permitido');
+      }
+    }
+
+    return this.autenticacionService.registrar(usuario, imagenPerfil);
   }
 
   @Post('/login')

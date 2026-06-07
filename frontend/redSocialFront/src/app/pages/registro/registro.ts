@@ -8,7 +8,6 @@ import {
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { obtenerMensajeError } from '../../core/http-error';
-import { RegistroRequest } from '../../models/usuario';
 import { AutenticacionService } from '../../services/autenticacion.service';
 
 @Component({
@@ -25,6 +24,7 @@ export class RegistroComponent {
 
   protected cargando = false;
   protected mensajeError = '';
+  protected imagenPerfil: File | null = null;
 
   protected readonly registroForm = this.formBuilder.nonNullable.group(
     {
@@ -49,9 +49,23 @@ export class RegistroComponent {
     this.cargando = true;
     this.mensajeError = '';
 
-    const datos: RegistroRequest = this.registroForm.getRawValue();
+    const datos = this.registroForm.getRawValue();
+    const formData = new FormData();
 
-    this.autenticacionService.registrar(datos).subscribe({
+    formData.append('nombre', datos.nombre);
+    formData.append('apellido', datos.apellido);
+    formData.append('correo', datos.correo);
+    formData.append('nombreUsuario', datos.nombreUsuario);
+    formData.append('password', datos.password);
+    formData.append('repetirPassword', datos.repetirPassword);
+    formData.append('fechaNacimiento', datos.fechaNacimiento);
+    formData.append('descripcion', datos.descripcion);
+
+    if (this.imagenPerfil) {
+      formData.append('imagenPerfil', this.imagenPerfil);
+    }
+
+    this.autenticacionService.registrar(formData).subscribe({
       next: () => {
         this.cargando = false;
         this.router.navigate(['/login']);
@@ -61,6 +75,11 @@ export class RegistroComponent {
         this.mensajeError = obtenerMensajeError(error);
       },
     });
+  }
+
+  protected seleccionarImagenPerfil(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.imagenPerfil = input.files?.[0] ?? null;
   }
 
   protected hasRequiredErrors(): boolean {

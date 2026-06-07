@@ -56,5 +56,24 @@
         }
       </div>
     }
+
+    @if (usuarioActual) {
+      <form class="mt-3" (ngSubmit)="enviarComentario()">
+        <label class="form-label" [for]="'comentario-' + publicacion._id">Comentar</label>
+        <div class="input-group">
+          <input
+            class="form-control"
+            [id]="'comentario-' + publicacion._id"
+            name="comentario-{{ publicacion._id }}"
+            type="text"
+            placeholder="Escribi un comentario"
+            [(ngModel)]="comentarioTexto"
+          />
+          <button class="btn btn-outline-primary" type="submit">
+            Enviar
+          </button>
+        </div>
+      </form>
+    }
   </div>
 </article>

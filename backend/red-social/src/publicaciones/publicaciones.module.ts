@@ -6,6 +6,7 @@ import {
   Publicacion,
   PublicacionSchema,
 } from './entities/publicacion.entity';
+import { CloudinaryService } from './cloudinary.service';
 import { PublicacionesService } from './publicaciones.service';
 
 @Module({
@@ -16,6 +17,6 @@ import { PublicacionesService } from './publicaciones.service';
     ]),
   ],
   controllers: [PublicacionesController],
-  providers: [PublicacionesService],
+  providers: [PublicacionesService, CloudinaryService],
 })
 export class PublicacionesModule {}

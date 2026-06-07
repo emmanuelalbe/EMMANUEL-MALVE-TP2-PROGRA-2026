@@ -7,14 +7,23 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Usuario } from '../autenticacion/usuario.schema';
+import { CreateComentarioDto } from './dto/create-comentario.dto';
 import { CreatePublicacionDto } from './dto/create-publicacion.dto';
 import { EliminarPublicacionDto } from './dto/eliminar-publicacion.dto';
 import { MeGustaDto } from './dto/me-gusta.dto';
-import { Publicacion } from './entities/publicacion.entity';
+import {
+  ComentarioPublicacion,
+  Publicacion,
+} from './entities/publicacion.entity';
+import { CloudinaryService } from './cloudinary.service';
 
 type DocumentoConObjeto<T> = T & {
   _id: unknown;
   toObject: () => T & { _id: unknown };
+};
+
+type ComentarioConId = ComentarioPublicacion & {
+  _id: unknown;
 };
 
 @Injectable()
@@ -23,6 +32,7 @@ export class PublicacionesService {
     @InjectModel(Publicacion.name)
     private readonly publicacionModel: Model<Publicacion>,
     @InjectModel(Usuario.name) private readonly usuarioModel: Model<Usuario>,
+    private readonly cloudinaryService: CloudinaryService,
   ) {}
 
   async create(
@@ -35,9 +45,10 @@ export class PublicacionesService {
       throw new BadRequestException('El usuario no existe');
     }
 
-    const imagenUrl = imagen
-      ? `/uploads/publicaciones/${imagen.filename}`
-      : createPublicacionDto.imagenUrl ?? '';
+    const imagenSubida = imagen
+      ? await this.cloudinaryService.subirImagen(imagen)
+      : null;
+    const imagenUrl = imagenSubida?.secure_url ?? createPublicacionDto.imagenUrl ?? '';
 
     const publicacionCreada = await this.publicacionModel.create({
       titulo: createPublicacionDto.titulo,
@@ -139,6 +150,27 @@ export class PublicacionesService {
     return this.findOne(id);
   }
 
+  async comentar(id: string, datos: CreateComentarioDto) {
+    const publicacion = await this.buscarPublicacion(id);
+    const usuario = await this.usuarioModel.findById(datos.usuarioId);
+
+    if (!usuario) {
+      throw new BadRequestException('El usuario no existe');
+    }
+
+    publicacion.comentarios.push({
+      texto: datos.texto,
+      usuarioId: datos.usuarioId,
+      fecha: new Date(),
+    });
+
+    await this.publicacionModel.findByIdAndUpdate(id, {
+      comentarios: publicacion.comentarios,
+    });
+
+    return this.findOne(id);
+  }
+
   private async buscarPublicacion(id: string) {
     const publicacion = await this.publicacionModel.findById(id);
 
@@ -152,6 +184,11 @@ export class PublicacionesService {
   private async formatearPublicacion(publicacion: DocumentoConObjeto<Publicacion>) {
     const publicacionObjeto = publicacion.toObject();
     const usuario = await this.usuarioModel.findById(publicacionObjeto.usuarioId);
+    const comentarios = await Promise.all(
+      (publicacionObjeto.comentarios ?? []).map((comentario) =>
+        this.formatearComentario(comentario as ComentarioConId),
+      ),
+    );
 
     return {
       _id: String(publicacionObjeto._id),
@@ -164,7 +201,20 @@ export class PublicacionesService {
         : this.usuarioNoEncontrado(publicacionObjeto.usuarioId),
       cantidadMeGusta: publicacionObjeto.usuariosMeGusta.length,
       usuariosMeGusta: publicacionObjeto.usuariosMeGusta,
-      comentarios: [],
+      comentarios,
+    };
+  }
+
+  private async formatearComentario(comentario: ComentarioConId) {
+    const usuario = await this.usuarioModel.findById(comentario.usuarioId);
+
+    return {
+      _id: String(comentario._id),
+      texto: comentario.texto,
+      fecha: comentario.fecha,
+      usuario: usuario
+        ? this.usuarioSinContraseña(usuario as DocumentoConObjeto<Usuario>)
+        : this.usuarioNoEncontrado(comentario.usuarioId),
     };
   }
 

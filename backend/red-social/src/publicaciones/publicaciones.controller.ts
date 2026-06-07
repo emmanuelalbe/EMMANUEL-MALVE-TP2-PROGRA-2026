@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -10,33 +11,36 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
+import { CreateComentarioDto } from './dto/create-comentario.dto';
 import { CreatePublicacionDto } from './dto/create-publicacion.dto';
 import { EliminarPublicacionDto } from './dto/eliminar-publicacion.dto';
 import { MeGustaDto } from './dto/me-gusta.dto';
 import { PublicacionesService } from './publicaciones.service';
+
+const TAMAÑO_MAXIMO_IMAGEN = 2 * 1024 * 1024;
+
+const TIPOS_IMAGEN_PERMITIDOS = ['image/png', 'image/jpg', 'image/jpeg'];
 
 @Controller('publicaciones')
 export class PublicacionesController {
   constructor(private readonly publicacionesService: PublicacionesService) {}
 
   @Post()
-  @UseInterceptors(
-    FileInterceptor('imagen', {
-      storage: diskStorage({
-        destination: './uploads/publicaciones',
-        filename: (_req, file, callback) => {
-          const nombreUnico = `${Date.now()}${extname(file.originalname)}`;
-          callback(null, nombreUnico);
-        },
-      }),
-    }),
-  )
+  @UseInterceptors(FileInterceptor('imagen'))
   create(
     @Body() createPublicacionDto: CreatePublicacionDto,
-    @UploadedFile() imagen: Express.Multer.File,
+    @UploadedFile() imagen?: Express.Multer.File,
   ) {
+    if (imagen) {
+      if (imagen.size > TAMAÑO_MAXIMO_IMAGEN) {
+        throw new BadRequestException('archivo muy grande');
+      }
+
+      if (!TIPOS_IMAGEN_PERMITIDOS.includes(imagen.mimetype)) {
+        throw new BadRequestException('tipo no permitido');
+      }
+    }
+
     return this.publicacionesService.create(createPublicacionDto, imagen);
   }
 
@@ -58,6 +62,11 @@ export class PublicacionesController {
   @Post(':id/me-gusta')
   darMeGusta(@Param('id') id: string, @Body() datos: MeGustaDto) {
     return this.publicacionesService.darMeGusta(id, datos);
+  }
+
+  @Post(':id/comentarios')
+  comentar(@Param('id') id: string, @Body() datos: CreateComentarioDto) {
+    return this.publicacionesService.comentar(id, datos);
   }
 
   @Delete(':id/me-gusta')

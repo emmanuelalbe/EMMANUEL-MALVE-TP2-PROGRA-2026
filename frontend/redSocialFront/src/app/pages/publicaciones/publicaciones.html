@@ -13,6 +13,40 @@
   </div>
 </div>
 
+@if (usuarioActual) {
+  <section class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h2 class="h5 mb-3">Crear publicacion</h2>
+
+      <form class="row g-3" [formGroup]="publicacionForm" (ngSubmit)="crearPublicacion()">
+        <div class="col-md-6">
+          <label class="form-label">Titulo</label>
+          <input class="form-control" type="text" formControlName="titulo" />
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Imagen</label>
+          <input
+            class="form-control"
+            type="file"
+            accept="image/png,image/jpg,image/jpeg"
+            (change)="seleccionarImagenPublicacion($event)"
+          />
+        </div>
+
+        <div class="col-12">
+          <label class="form-label">Descripcion</label>
+          <textarea class="form-control" rows="3" formControlName="descripcion"></textarea>
+        </div>
+
+        <div class="col-12">
+          <button class="btn btn-primary" type="submit">Publicar</button>
+        </div>
+      </form>
+    </div>
+  </section>
+}
+
 @if (mensajeError) {
   <div class="alert alert-danger">{{ mensajeError }}</div>
 }
@@ -31,6 +65,7 @@
     [usuarioActual]="usuarioActual"
     (cambiarMeGusta)="cambiarMeGusta($event)"
     (eliminar)="eliminarPublicacion($event)"
+    (comentar)="comentarPublicacion($event)"
   />
 }
 

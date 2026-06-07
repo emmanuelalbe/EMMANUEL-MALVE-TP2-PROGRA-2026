@@ -6,6 +6,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
+import { CloudinaryService } from '../publicaciones/cloudinary.service';
 import { Usuario } from './usuario.schema';
 import { UsuarioLoginDTO, UsuarioRegistroDTO } from './usuario.dto';
 
@@ -13,6 +14,7 @@ import { UsuarioLoginDTO, UsuarioRegistroDTO } from './usuario.dto';
 export class AutenticacionService {
   constructor(
     @InjectModel(Usuario.name) private readonly usuarioModel: Model<Usuario>,
+    private readonly cloudinaryService: CloudinaryService,
   ) {}
 
   async registrar(
@@ -41,9 +43,10 @@ export class AutenticacionService {
 
     const contraseñaEncriptada = await bcrypt.hash(usuario.password, 10);
 
-    const imagenPerfilUrl = imagenPerfil
-      ? `/uploads/perfiles/${imagenPerfil.filename}`
-      : '';
+    const imagenSubida = imagenPerfil
+      ? await this.cloudinaryService.subirImagen(imagenPerfil)
+      : null;
+    const imagenPerfilUrl = imagenSubida?.secure_url ?? '';
 
     const usuarioCreado = await this.usuarioModel.create({
       nombre: usuario.nombre,

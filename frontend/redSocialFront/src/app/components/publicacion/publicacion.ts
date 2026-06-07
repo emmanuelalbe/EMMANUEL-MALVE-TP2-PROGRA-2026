@@ -1,12 +1,13 @@
 import { DatePipe } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { API_URL } from '../../core/api.config';
 import { Publicacion } from '../../models/publicacion';
 import { Usuario } from '../../models/usuario';
 
 @Component({
   selector: 'app-publicacion',
-  imports: [DatePipe],
+  imports: [DatePipe, FormsModule],
   templateUrl: './publicacion.html',
   styleUrl: './publicacion.css',
 })
@@ -15,6 +16,9 @@ export class PublicacionComponent {
   @Input() usuarioActual: Usuario | null = null;
   @Output() cambiarMeGusta = new EventEmitter<Publicacion>();
   @Output() eliminar = new EventEmitter<Publicacion>();
+  @Output() comentar = new EventEmitter<{ publicacion: Publicacion; texto: string }>();
+
+  protected comentarioTexto = '';
 
   protected get dioMeGusta(): boolean {
     const usuarioId = this.usuarioActual?._id;
@@ -38,5 +42,16 @@ export class PublicacionComponent {
     }
 
     return imagenUrl.startsWith('http') ? imagenUrl : `${API_URL}${imagenUrl}`;
+  }
+
+  protected enviarComentario(): void {
+    const texto = this.comentarioTexto.trim();
+
+    if (!texto) {
+      return;
+    }
+
+    this.comentar.emit({ publicacion: this.publicacion, texto });
+    this.comentarioTexto = '';
   }
 }
