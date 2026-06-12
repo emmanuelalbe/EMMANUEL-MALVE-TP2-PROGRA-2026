@@ -139,7 +139,7 @@ export class AutenticacionService {
   private generarToken(payload: TokenPayload) {
     return this.jwtService.signAsync(payload, {
       secret: this.configService.get<string>('JWT_SECRET') ?? 'secreto-tp',
-      expiresIn: '15m',
+      expiresIn: '2m',
     });
   }
 
