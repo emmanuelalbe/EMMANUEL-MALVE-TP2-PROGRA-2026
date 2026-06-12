@@ -145,31 +145,6 @@ export class PublicacionesComponent {
     });
   }
 
-  protected comentarPublicacion(evento: {
-    publicacion: Publicacion;
-    texto: string;
-  }): void {
-    const usuarioId = this.usuarioActual?._id;
-
-    if (!usuarioId) {
-      this.mensajeError = 'Tenes que iniciar sesion para comentar.';
-      return;
-    }
-
-    this.publicacionesService
-      .comentar(evento.publicacion._id, usuarioId, evento.texto)
-      .subscribe({
-        next: (publicacionActualizada) => {
-          this.publicaciones = this.publicaciones.map((item) =>
-            item._id === publicacionActualizada._id ? publicacionActualizada : item,
-          );
-        },
-        error: (error) => {
-          this.mensajeError = obtenerMensajeError(error);
-        },
-      });
-  }
-
   protected get paginaActual(): number {
     return Math.floor(this.offset / this.limit) + 1;
   }

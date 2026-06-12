@@ -9,6 +9,7 @@ import {
 import { Router, RouterLink } from '@angular/router';
 import { obtenerMensajeError } from '../../core/http-error';
 import { AutenticacionService } from '../../services/autenticacion.service';
+import { SesionService } from '../../services/sesion.service';
 
 @Component({
   selector: 'app-registro',
@@ -19,6 +20,7 @@ import { AutenticacionService } from '../../services/autenticacion.service';
 export class RegistroComponent {
   private readonly formBuilder = inject(FormBuilder);
   private readonly autenticacionService = inject(AutenticacionService);
+  private readonly sesionService = inject(SesionService);
   private readonly router = inject(Router);
   private readonly passwordPattern = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
 
@@ -66,9 +68,11 @@ export class RegistroComponent {
     }
 
     this.autenticacionService.registrar(formData).subscribe({
-      next: () => {
+      next: (usuario) => {
+        this.autenticacionService.guardarSesion(usuario);
+        this.sesionService.iniciarContador();
         this.cargando = false;
-        this.router.navigate(['/login']);
+        this.router.navigate(['/publicaciones']);
       },
       error: (error) => {
         this.cargando = false;

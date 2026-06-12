@@ -14,3 +14,25 @@
 <main class="container py-4">
   <router-outlet />
 </main>
+
+@if (sesionService.mostrarModal()) {
+  <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5)">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title h5">Sesion por vencer</h2>
+        </div>
+        <div class="modal-body">
+          <p class="mb-0">
+            Te quedan 5 minutos de sesion. Queres extenderla?
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" type="button" (click)="extenderSesion()">
+            Extender sesion
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

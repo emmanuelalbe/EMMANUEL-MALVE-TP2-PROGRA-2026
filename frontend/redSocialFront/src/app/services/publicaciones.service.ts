@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_URL } from '../core/api.config';
-import { ListarPublicacionesParams, Publicacion } from '../models/publicacion';
+import { Comentario, ListarPublicacionesParams, Publicacion } from '../models/publicacion';
 import { Usuario } from '../models/usuario';
 
 @Injectable({ providedIn: 'root' })
@@ -25,6 +25,34 @@ export class PublicacionesService {
 
   crear(datos: FormData): Observable<Publicacion> {
     return this.http.post<Publicacion>(this.baseUrl, datos);
+  }
+
+  obtener(id: string): Observable<Publicacion> {
+    return this.http.get<Publicacion>(`${this.baseUrl}/${id}`);
+  }
+
+  listarComentarios(
+    publicacionId: string,
+    offset: number,
+    limit: number,
+  ): Observable<Comentario[]> {
+    const params = new HttpParams().set('offset', offset).set('limit', limit);
+
+    return this.http.get<Comentario[]>(`${this.baseUrl}/${publicacionId}/comentarios`, {
+      params,
+    });
+  }
+
+  modificarComentario(
+    publicacionId: string,
+    comentarioId: string,
+    usuarioId: string,
+    texto: string,
+  ): Observable<Comentario> {
+    return this.http.put<Comentario>(
+      `${this.baseUrl}/${publicacionId}/comentarios/${comentarioId}`,
+      { usuarioId, texto },
+    );
   }
 
   listarUltimasDelUsuario(usuarioId: string, limit = 3): Observable<Publicacion[]> {

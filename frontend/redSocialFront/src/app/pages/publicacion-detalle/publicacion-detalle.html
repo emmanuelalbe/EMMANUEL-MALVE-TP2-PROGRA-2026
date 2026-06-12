@@ -1,0 +1,101 @@
+<a class="btn btn-link px-0 mb-3" routerLink="/publicaciones">Volver a publicaciones</a>
+
+@if (mensajeError) {
+  <div class="alert alert-danger">{{ mensajeError }}</div>
+}
+
+@if (cargando) {
+  <div class="alert alert-info">Cargando publicacion...</div>
+}
+
+@if (!cargando && publicacion) {
+  <article class="card shadow-sm">
+    @if (publicacion.imagenUrl) {
+      <img
+        class="card-img-top publicacion-detalle-imagen"
+        [src]="imagenPublicacion()"
+        [alt]="publicacion.titulo"
+      />
+    }
+
+    <div class="card-body">
+      <h1 class="h3 mb-2">{{ publicacion.titulo }}</h1>
+      <p class="text-secondary small mb-3">
+        {{ publicacion.usuario.nombre }} {{ publicacion.usuario.apellido }}
+        · {{ publicacion.fechaCreacion | date: 'short' }}
+      </p>
+
+      <p class="mb-4">{{ publicacion.descripcion }}</p>
+
+      <p class="text-secondary small mb-4">{{ publicacion.cantidadMeGusta }} me gusta</p>
+
+      <hr />
+
+      <h2 class="h5 mb-3">Comentarios</h2>
+
+      <div class="d-grid gap-2 mb-3">
+        @for (comentario of comentarios; track comentario._id) {
+          <div class="border rounded p-3">
+            @if (comentarioEditandoId === comentario._id) {
+              <form (ngSubmit)="guardarEdicion(comentario)">
+                <textarea
+                  class="form-control mb-2"
+                  rows="2"
+                  [(ngModel)]="comentarioEditandoTexto"
+                  name="editar-{{ comentario._id }}"
+                ></textarea>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-primary btn-sm" type="submit">Guardar</button>
+                  <button class="btn btn-outline-secondary btn-sm" type="button" (click)="cancelarEdicion()">
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            } @else {
+              <p class="mb-1">{{ comentario.texto }}</p>
+              <p class="text-secondary small mb-2">
+                {{ comentario.usuario.nombre }} · {{ comentario.fecha | date: 'short' }}
+                @if (comentario.modificado) {
+                  · <span class="text-warning">editado</span>
+                }
+              </p>
+              @if (puedeEditar(comentario)) {
+                <button class="btn btn-outline-primary btn-sm" type="button" (click)="iniciarEdicion(comentario)">
+                  Editar
+                </button>
+              }
+            }
+          </div>
+        }
+      </div>
+
+      @if (hayMasComentarios) {
+        <button
+          class="btn btn-outline-primary mb-3"
+          type="button"
+          [disabled]="cargandoComentarios"
+          (click)="cargarMasComentarios()"
+        >
+          {{ cargandoComentarios ? 'Cargando...' : 'Cargar mas' }}
+        </button>
+      }
+
+      @if (usuarioActual) {
+        <form (ngSubmit)="enviarComentario()">
+          <label class="form-label" for="nuevo-comentario">Escribir comentario</label>
+          <div class="input-group">
+            <input
+              class="form-control"
+              id="nuevo-comentario"
+              type="text"
+              placeholder="Escribi un comentario"
+              [(ngModel)]="comentarioTexto"
+              name="nuevoComentario"
+            />
+            <button class="btn btn-primary" type="submit">Enviar</button>
+          </div>
+        </form>
+      }
+    </div>
+  </article>
+}

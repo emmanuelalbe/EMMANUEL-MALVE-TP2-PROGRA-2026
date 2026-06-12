@@ -3,6 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { obtenerMensajeError } from '../../core/http-error';
 import { AutenticacionService } from '../../services/autenticacion.service';
+import { SesionService } from '../../services/sesion.service';
 
 @Component({
   selector: 'app-login',
@@ -15,6 +16,7 @@ export class LoginComponent {
   private readonly formBuilder = inject(FormBuilder);
 
   private readonly autenticacionService = inject(AutenticacionService);
+  private readonly sesionService = inject(SesionService);
   private readonly router = inject(Router);
   private readonly passwordPattern = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
 
@@ -38,6 +40,7 @@ export class LoginComponent {
     this.autenticacionService.login(this.loginForm.getRawValue()).subscribe({
       next: (usuario) => {
         this.autenticacionService.guardarSesion(usuario);
+        this.sesionService.iniciarContador();
         this.cargando = false;
         this.router.navigate(['/publicaciones']);
       },

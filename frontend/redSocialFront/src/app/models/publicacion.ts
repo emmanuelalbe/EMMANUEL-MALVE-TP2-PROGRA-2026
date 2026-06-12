@@ -6,6 +6,7 @@ export interface Comentario {
   _id: string;
   texto: string;
   fecha: string;
+  modificado?: boolean;
   usuario: Usuario;
 }
 

@@ -8,6 +8,11 @@ export interface Usuario {
   descripcion: string;
   imagenPerfilUrl?: string;
   perfil: string;
+  token?: string;
+}
+
+export interface RefrescarResponse {
+  token: string;
 }
 
 export interface LoginRequest {
