@@ -3,7 +3,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { obtenerMensajeError } from '../../core/http-error';
-import { API_URL } from '../../core/api.config';
+import { resolverUrlImagen, tieneImagen } from '../../core/imagen.util';
 import { Comentario, Publicacion } from '../../models/publicacion';
 import { Usuario } from '../../models/usuario';
 import { AutenticacionService } from '../../services/autenticacion.service';
@@ -27,7 +27,7 @@ export class PublicacionDetalleComponent implements OnInit {
   protected comentarioEditandoId: string | null = null;
   protected comentarioEditandoTexto = '';
   protected offset = 0;
-  protected readonly limit = 5;
+  protected readonly limit = 3;
   protected hayMasComentarios = false;
   protected cargando = true;
   protected cargandoComentarios = false;
@@ -46,14 +46,18 @@ export class PublicacionDetalleComponent implements OnInit {
     this.cargarComentarios(id);
   }
 
+  protected imagenVisible = true;
+
+  protected get tieneImagenPublicacion(): boolean {
+    return tieneImagen(this.publicacion?.imagenUrl) && this.imagenVisible;
+  }
+
   protected imagenPublicacion(): string {
-    const imagenUrl = this.publicacion?.imagenUrl;
+    return resolverUrlImagen(this.publicacion?.imagenUrl);
+  }
 
-    if (!imagenUrl) {
-      return '';
-    }
-
-    return imagenUrl.startsWith('http') ? imagenUrl : `${API_URL}${imagenUrl}`;
+  protected ocultarImagenRota(): void {
+    this.imagenVisible = false;
   }
 
   protected enviarComentario(): void {

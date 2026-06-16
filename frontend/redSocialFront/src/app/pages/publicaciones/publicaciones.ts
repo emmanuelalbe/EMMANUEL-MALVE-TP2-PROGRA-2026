@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { obtenerMensajeError } from '../../core/http-error';
 import { PublicacionComponent } from '../../components/publicacion/publicacion';
@@ -13,13 +13,14 @@ import { PublicacionesService } from '../../services/publicaciones.service';
   templateUrl: './publicaciones.html',
   styleUrl: './publicaciones.css',
 })
-export class PublicacionesComponent {
+export class PublicacionesComponent implements OnInit {
   private readonly publicacionesService = inject(PublicacionesService);
   private readonly autenticacionService = inject(AutenticacionService);
   private readonly formBuilder = inject(FormBuilder);
 
   protected publicaciones: Publicacion[] = [];
   protected imagenPublicacion: File | null = null;
+  protected vistaPreviaImagen: string | null = null;
   protected readonly publicacionForm = this.formBuilder.nonNullable.group({
     titulo: ['', Validators.required],
     descripcion: ['', Validators.required],
@@ -28,10 +29,11 @@ export class PublicacionesComponent {
   protected orden: OrdenPublicaciones = 'fecha';
   protected offset = 0;
   protected readonly limit = 5;
+  protected hayPaginaSiguiente = false;
   protected cargando = false;
   protected mensajeError = '';
 
-  constructor() {
+  ngOnInit(): void {
     this.cargarPublicaciones();
   }
 
@@ -105,7 +107,14 @@ export class PublicacionesComponent {
 
   protected seleccionarImagenPublicacion(event: Event): void {
     const input = event.target as HTMLInputElement;
-    this.imagenPublicacion = input.files?.[0] ?? null;
+    const archivo = input.files?.[0] ?? null;
+
+    if (this.vistaPreviaImagen) {
+      URL.revokeObjectURL(this.vistaPreviaImagen);
+    }
+
+    this.imagenPublicacion = archivo;
+    this.vistaPreviaImagen = archivo ? URL.createObjectURL(archivo) : null;
   }
 
   protected crearPublicacion(): void {
@@ -136,6 +145,12 @@ export class PublicacionesComponent {
       next: () => {
         this.publicacionForm.reset();
         this.imagenPublicacion = null;
+
+        if (this.vistaPreviaImagen) {
+          URL.revokeObjectURL(this.vistaPreviaImagen);
+          this.vistaPreviaImagen = null;
+        }
+
         this.offset = 0;
         this.cargarPublicaciones();
       },
@@ -149,10 +164,6 @@ export class PublicacionesComponent {
     return Math.floor(this.offset / this.limit) + 1;
   }
 
-  protected get hayPaginaSiguiente(): boolean {
-    return this.publicaciones.length === this.limit;
-  }
-
   private cargarPublicaciones(): void {
     this.cargando = true;
     this.mensajeError = '';
@@ -161,20 +172,32 @@ export class PublicacionesComponent {
       .listar({
         orden: this.orden,
         offset: this.offset,
-        limit: this.limit,
+        limit: this.limit + 1,
       })
       .subscribe({
         next: (publicaciones) => {
           this.cargando = false;
-          this.publicaciones = Array.isArray(publicaciones) ? publicaciones : [];
 
           if (!Array.isArray(publicaciones)) {
+            this.publicaciones = [];
+            this.hayPaginaSiguiente = false;
             this.mensajeError = 'El backend de publicaciones todavia no esta implementado.';
+            return;
           }
+
+          if (publicaciones.length === 0 && this.offset > 0) {
+            this.offset = Math.max(0, this.offset - this.limit);
+            this.cargarPublicaciones();
+            return;
+          }
+
+          this.hayPaginaSiguiente = publicaciones.length > this.limit;
+          this.publicaciones = publicaciones.slice(0, this.limit);
         },
         error: (error) => {
           this.cargando = false;
           this.publicaciones = [];
+          this.hayPaginaSiguiente = false;
           this.mensajeError = obtenerMensajeError(error);
         },
       });

@@ -86,9 +86,18 @@ export class RegistroComponent {
     this.imagenPerfil = input.files?.[0] ?? null;
   }
 
-  protected hasRequiredErrors(): boolean {
-    return Object.values(this.registroForm.controls).some(
-      (control) => control.touched && control.hasError('required'),
+  protected showError(
+    controlName: keyof typeof this.registroForm.controls,
+    error?: string,
+  ): boolean {
+    const control = this.registroForm.controls[controlName];
+    return control.touched && (error ? control.hasError(error) : control.invalid);
+  }
+
+  protected passwordsMismatch(): boolean {
+    return (
+      this.registroForm.controls.repetirPassword.touched &&
+      this.registroForm.hasError('passwordMismatch')
     );
   }
 

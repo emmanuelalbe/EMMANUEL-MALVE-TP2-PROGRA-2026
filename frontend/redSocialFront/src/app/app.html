@@ -3,10 +3,14 @@
     <a class="navbar-brand fw-bold" routerLink="/publicaciones">Red Social</a>
 
     <div class="navbar-nav ms-auto">
-      <a class="nav-link" routerLink="/publicaciones" routerLinkActive="active">Publicaciones</a>
-      <a class="nav-link" routerLink="/mi-perfil" routerLinkActive="active">Mi perfil</a>
-      <a class="nav-link" routerLink="/login" routerLinkActive="active">Login</a>
-      <a class="nav-link" routerLink="/registro" routerLinkActive="active">Registro</a>
+      @if (estaAutenticado) {
+        <a class="nav-link" routerLink="/publicaciones" routerLinkActive="active">Publicaciones</a>
+        <a class="nav-link" routerLink="/mi-perfil" routerLinkActive="active">Mi perfil</a>
+        <button class="btn btn-link nav-link" type="button" (click)="cerrarSesion()">Cerrar sesion</button>
+      } @else {
+        <a class="nav-link" routerLink="/login" routerLinkActive="active">Login</a>
+        <a class="nav-link" routerLink="/registro" routerLinkActive="active">Registro</a>
+      }
     </div>
   </div>
 </nav>

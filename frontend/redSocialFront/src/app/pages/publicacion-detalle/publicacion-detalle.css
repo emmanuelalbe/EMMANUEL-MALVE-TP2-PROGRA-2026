@@ -3,3 +3,10 @@
   object-fit: contain;
   background-color: #f8f9fa;
 }
+
+.publicacion-sin-imagen {
+  min-height: 220px;
+  background-color: #f8f9fa;
+  color: #6c757d;
+  font-size: 0.9rem;
+}

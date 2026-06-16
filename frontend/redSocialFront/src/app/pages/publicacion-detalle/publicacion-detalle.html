@@ -10,12 +10,18 @@
 
 @if (!cargando && publicacion) {
   <article class="card shadow-sm">
-    @if (publicacion.imagenUrl) {
+    @if (tieneImagenPublicacion) {
       <img
         class="card-img-top publicacion-detalle-imagen"
         [src]="imagenPublicacion()"
         [alt]="publicacion.titulo"
+        loading="lazy"
+        (error)="ocultarImagenRota()"
       />
+    } @else {
+      <div class="publicacion-sin-imagen card-img-top d-flex align-items-center justify-content-center">
+        Sin imagen
+      </div>
     }
 
     <div class="card-body">
@@ -76,7 +82,7 @@
           [disabled]="cargandoComentarios"
           (click)="cargarMasComentarios()"
         >
-          {{ cargandoComentarios ? 'Cargando...' : 'Cargar mas' }}
+          {{ cargandoComentarios ? 'Cargando...' : 'Ver todos los comentarios' }}
         </button>
       }
 

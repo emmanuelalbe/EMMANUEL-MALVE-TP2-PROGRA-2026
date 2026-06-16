@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { PublicacionComponent } from '../../components/publicacion/publicacion';
-import { API_URL } from '../../core/api.config';
+import { resolverUrlImagen, tieneImagen } from '../../core/imagen.util';
 import { obtenerMensajeError } from '../../core/http-error';
 import { Publicacion } from '../../models/publicacion';
 import { Usuario } from '../../models/usuario';
@@ -14,27 +14,26 @@ import { PublicacionesService } from '../../services/publicaciones.service';
   templateUrl: './mi-perfil.html',
   styleUrl: './mi-perfil.css',
 })
-export class MiPerfilComponent {
+export class MiPerfilComponent implements OnInit {
   private readonly autenticacionService = inject(AutenticacionService);
   private readonly publicacionesService = inject(PublicacionesService);
 
-  protected usuarioActual: Usuario | null = this.autenticacionService.obtenerSesion();
+  protected usuarioActual: Usuario | null = null;
   protected ultimasPublicaciones: Publicacion[] = [];
   protected cargando = false;
   protected mensajeError = '';
 
-  constructor() {
+  ngOnInit(): void {
+    this.usuarioActual = this.autenticacionService.obtenerSesion();
     this.cargarUltimasPublicaciones();
   }
 
   protected imagenPerfilUrl(): string {
-    const imagenPerfilUrl = this.usuarioActual?.imagenPerfilUrl;
+    return resolverUrlImagen(this.usuarioActual?.imagenPerfilUrl);
+  }
 
-    if (!imagenPerfilUrl) {
-      return '';
-    }
-
-    return imagenPerfilUrl.startsWith('http') ? imagenPerfilUrl : `${API_URL}${imagenPerfilUrl}`;
+  protected tieneImagenPerfil(): boolean {
+    return tieneImagen(this.usuarioActual?.imagenPerfilUrl);
   }
 
   protected cambiarMeGusta(publicacion: Publicacion): void {

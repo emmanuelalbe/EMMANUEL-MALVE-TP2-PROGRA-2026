@@ -7,8 +7,8 @@
   <div class="orden-publicaciones">
     <label class="form-label" for="orden">Ordenar por</label>
     <select class="form-select" id="orden" [value]="orden" (change)="cambiarOrden($event)">
-      <option value="fecha">Fecha</option>
-      <option value="likes">Cantidad de me gusta</option>
+      <option value="fecha">Mas recientes</option>
+      <option value="likes">Mas me gusta</option>
     </select>
   </div>
 </div>
@@ -32,6 +32,9 @@
             accept="image/png,image/jpg,image/jpeg"
             (change)="seleccionarImagenPublicacion($event)"
           />
+          @if (vistaPreviaImagen) {
+            <img class="vista-previa-imagen mt-2" [src]="vistaPreviaImagen" alt="Vista previa de la imagen" />
+          }
         </div>
 
         <div class="col-12">
@@ -59,13 +62,17 @@
   <div class="alert alert-secondary">Todavia no hay publicaciones para mostrar.</div>
 }
 
-@for (publicacion of publicaciones; track publicacion._id) {
-  <app-publicacion
-    [publicacion]="publicacion"
-    [usuarioActual]="usuarioActual"
-    (cambiarMeGusta)="cambiarMeGusta($event)"
-    (eliminar)="eliminarPublicacion($event)"
-  />
+@if (!cargando) {
+  <section class="publicaciones-listado" aria-label="Listado de publicaciones">
+    @for (publicacion of publicaciones; track publicacion._id) {
+      <app-publicacion
+        [publicacion]="publicacion"
+        [usuarioActual]="usuarioActual"
+        (cambiarMeGusta)="cambiarMeGusta($event)"
+        (eliminar)="eliminarPublicacion($event)"
+      />
+    }
+  </section>
 }
 
 <div class="d-flex justify-content-between align-items-center mt-4">

@@ -86,7 +86,10 @@ export class PublicacionesService {
     const publicacionesOrdenadas =
       orden === 'likes'
         ? publicaciones.sort(
-            (a, b) => b.usuariosMeGusta.length - a.usuariosMeGusta.length,
+            (a, b) =>
+              b.usuariosMeGusta.length - a.usuariosMeGusta.length ||
+              new Date(b.fechaCreacion).getTime() -
+                new Date(a.fechaCreacion).getTime(),
           )
         : publicaciones;
 

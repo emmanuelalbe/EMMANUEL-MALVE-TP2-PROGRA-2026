@@ -1,65 +1,70 @@
-<article class="card shadow-sm mb-3">
-  @if (publicacion.imagenUrl) {
+<article class="publicacion-card">
+  @if (tieneImagenPublicacion) {
     <img
-      class="card-img-top publicacion-imagen"
+      class="publicacion-imagen"
       [src]="imagenPublicacion()"
       [alt]="publicacion.titulo"
+      loading="lazy"
+      (error)="ocultarImagenRota()"
     />
+  } @else {
+    <div class="publicacion-sin-imagen">
+      Sin imagen
+    </div>
   }
 
-  <div class="card-body">
-    <div class="d-flex justify-content-between gap-3 mb-2">
+  <div class="publicacion-contenido">
+    <div class="publicacion-encabezado">
       <div>
-        <h2 class="h5 mb-1">
-          <a class="text-decoration-none" [routerLink]="['/publicaciones', publicacion._id]">
+        <h2 class="publicacion-titulo">
+          <a class="publicacion-link" [routerLink]="['/publicaciones', publicacion._id]">
             {{ publicacion.titulo }}
           </a>
         </h2>
-        <p class="text-secondary small mb-0">
+        <p class="publicacion-meta">
           {{ publicacion.usuario.nombre }} {{ publicacion.usuario.apellido }}
           · {{ publicacion.fechaCreacion | date: 'short' }}
         </p>
       </div>
 
       @if (puedeEliminar) {
-        <button class="btn btn-outline-danger btn-sm" type="button" (click)="eliminar.emit(publicacion)">
+        <button class="publicacion-boton publicacion-boton-eliminar" type="button" (click)="eliminar.emit(publicacion)">
           Eliminar
         </button>
       }
     </div>
 
-    <p class="mb-3">{{ publicacion.descripcion }}</p>
+    <p class="publicacion-descripcion">{{ publicacion.descripcion }}</p>
 
-    <div class="d-flex align-items-center gap-2">
+    <div class="publicacion-acciones">
       <button
-        class="btn btn-sm"
-        [class.btn-primary]="dioMeGusta"
-        [class.btn-outline-primary]="!dioMeGusta"
+        class="publicacion-boton"
+        [class.publicacion-boton-activo]="dioMeGusta"
         type="button"
         [disabled]="!usuarioActual"
         (click)="cambiarMeGusta.emit(publicacion)"
       >
         {{ dioMeGusta ? 'Quitar me gusta' : 'Me gusta' }}
       </button>
-      <span class="text-secondary small">
+      <span class="publicacion-contador">
         {{ publicacion.cantidadMeGusta }} me gusta
       </span>
     </div>
 
     @if (mostrarComentarios) {
-      <hr />
-      <h3 class="h6">Comentarios</h3>
+      <hr class="publicacion-separador" />
+      <h3 class="publicacion-subtitulo">Comentarios</h3>
 
       @if (publicacion.comentarios.length === 0) {
-        <p class="text-secondary small mb-0">Esta publicacion no tiene comentarios.</p>
+        <p class="publicacion-texto-secundario">Esta publicacion no tiene comentarios.</p>
       }
 
       @if (publicacion.comentarios.length > 0) {
-        <div class="d-grid gap-2">
-          @for (comentario of publicacion.comentarios; track comentario._id) {
-            <div class="border rounded p-2">
-              <p class="mb-1">{{ comentario.texto }}</p>
-              <p class="text-secondary small mb-0">
+        <div class="publicacion-comentarios">
+          @for (comentario of comentariosVisibles; track comentario._id) {
+            <div class="publicacion-comentario">
+              <p class="publicacion-comentario-texto">{{ comentario.texto }}</p>
+              <p class="publicacion-comentario-meta">
                 {{ comentario.usuario.nombre }} · {{ comentario.fecha | date: 'short' }}
                 @if (comentario.modificado) {
                   · editado
@@ -68,10 +73,20 @@
             </div>
           }
         </div>
+
+        @if (hayMasComentarios && !comentariosExpandidos) {
+          <button
+            class="publicacion-ver-comentarios"
+            type="button"
+            (click)="alternarComentarios()"
+          >
+            Ver todos los comentarios
+          </button>
+        }
       }
     }
 
-    <a class="btn btn-outline-secondary btn-sm mt-2" [routerLink]="['/publicaciones', publicacion._id]">
+    <a class="publicacion-boton publicacion-boton-detalle" [routerLink]="['/publicaciones', publicacion._id]">
       Ver publicacion
     </a>
   </div>
