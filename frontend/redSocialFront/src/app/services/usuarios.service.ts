@@ -17,9 +17,11 @@ export class UsuariosService {
     return this.http.post<Usuario>(this.baseUrl, datos);
   }
 
-  cambiarHabilitacion(usuarioId: string, habilitado: boolean): Observable<Usuario> {
-    return this.http.patch<Usuario>(`${this.baseUrl}/${usuarioId}/habilitacion`, {
-      habilitado,
-    });
+  deshabilitar(usuarioId: string): Observable<Usuario> {
+    return this.http.delete<Usuario>(`${this.baseUrl}/${usuarioId}`);
+  }
+
+  rehabilitar(usuarioId: string): Observable<Usuario> {
+    return this.http.post<Usuario>(`${this.baseUrl}/${usuarioId}/habilitacion`, {});
   }
 }

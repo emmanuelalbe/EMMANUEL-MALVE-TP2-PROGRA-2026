@@ -121,8 +121,8 @@ export class DashboardUsuariosComponent implements OnInit {
       return;
     }
 
-    const habilitado = !this.estaHabilitado(usuario);
-    const accion = habilitado ? 'habilitar' : 'deshabilitar';
+    const habilitado = this.estaHabilitado(usuario);
+    const accion = habilitado ? 'deshabilitar' : 'habilitar';
     const confirmar = window.confirm(
       `Estas seguro de ${accion} a ${usuario.nombreUsuario}?`,
     );
@@ -134,14 +134,18 @@ export class DashboardUsuariosComponent implements OnInit {
     this.mensajeError = '';
     this.mensajeExito = '';
 
-    this.usuariosService.cambiarHabilitacion(usuario._id, habilitado).subscribe({
+    const request = habilitado
+      ? this.usuariosService.deshabilitar(usuario._id)
+      : this.usuariosService.rehabilitar(usuario._id);
+
+    request.subscribe({
       next: (usuarioActualizado) => {
         this.usuarios = this.usuarios.map((item) =>
           item._id === usuarioActualizado._id ? usuarioActualizado : item,
         );
         this.mensajeExito = habilitado
-          ? 'Usuario habilitado correctamente.'
-          : 'Usuario deshabilitado correctamente.';
+          ? 'Usuario deshabilitado correctamente.'
+          : 'Usuario habilitado correctamente.';
       },
       error: (error) => {
         this.mensajeError = obtenerMensajeError(error);

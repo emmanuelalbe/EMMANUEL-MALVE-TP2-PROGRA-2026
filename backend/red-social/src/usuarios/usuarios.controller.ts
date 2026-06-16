@@ -2,9 +2,9 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   Param,
-  Patch,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -12,7 +12,6 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UsuariosService } from './usuarios.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
-import { HabilitarUsuarioDto } from './dto/habilitar-usuario.dto';
 
 const TAMAÑO_MAXIMO_IMAGEN = 2 * 1024 * 1024;
 const TIPOS_IMAGEN_PERMITIDOS = ['image/png', 'image/jpg', 'image/jpeg'];
@@ -50,11 +49,13 @@ export class UsuariosController {
     return this.usuariosService.obtenerEstado(id);
   }
 
-  @Patch(':id/habilitacion')
-  cambiarHabilitacion(
-    @Param('id') id: string,
-    @Body() datos: HabilitarUsuarioDto,
-  ) {
-    return this.usuariosService.cambiarHabilitacion(id, datos.habilitado);
+  @Delete(':id')
+  deshabilitar(@Param('id') id: string) {
+    return this.usuariosService.deshabilitar(id);
+  }
+
+  @Post(':id/habilitacion')
+  rehabilitar(@Param('id') id: string) {
+    return this.usuariosService.rehabilitar(id);
   }
 }

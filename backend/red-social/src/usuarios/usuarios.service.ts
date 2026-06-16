@@ -90,7 +90,15 @@ export class UsuariosService {
     };
   }
 
-  async cambiarHabilitacion(id: string, habilitado: boolean) {
+  async deshabilitar(id: string) {
+    return this.cambiarHabilitacion(id, false);
+  }
+
+  async rehabilitar(id: string) {
+    return this.cambiarHabilitacion(id, true);
+  }
+
+  private async cambiarHabilitacion(id: string, habilitado: boolean) {
     const usuarioId = this.obtenerObjectId(id);
     const resultado = await this.usuarioModel.collection.updateOne(
       { _id: usuarioId },
