@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { obtenerMensajeError } from '../../core/http-error';
 import { resolverUrlImagen, tieneImagen } from '../../core/imagen.util';
 import { Comentario, Publicacion } from '../../models/publicacion';
@@ -17,6 +17,7 @@ import { PublicacionesService } from '../../services/publicaciones.service';
 })
 export class PublicacionDetalleComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly publicacionesService = inject(PublicacionesService);
   private readonly autenticacionService = inject(AutenticacionService);
 
@@ -58,6 +59,39 @@ export class PublicacionDetalleComponent implements OnInit {
 
   protected ocultarImagenRota(): void {
     this.imagenVisible = false;
+  }
+
+  protected get puedeEliminar(): boolean {
+    const usuarioId = this.usuarioActual?._id;
+
+    return (
+      !!usuarioId &&
+      !!this.publicacion &&
+      (this.publicacion.usuario._id === usuarioId ||
+        this.usuarioActual?.perfil === 'administrador')
+    );
+  }
+
+  protected eliminarPublicacion(): void {
+    if (!this.usuarioActual || !this.publicacion) {
+      this.mensajeError = 'Tenes que iniciar sesion para eliminar publicaciones.';
+      return;
+    }
+
+    const confirmar = window.confirm('Estas seguro de eliminar esta publicacion?');
+
+    if (!confirmar) {
+      return;
+    }
+
+    this.publicacionesService.eliminar(this.publicacion._id, this.usuarioActual).subscribe({
+      next: () => {
+        this.router.navigate(['/publicaciones']);
+      },
+      error: (error) => {
+        this.mensajeError = obtenerMensajeError(error);
+      },
+    });
   }
 
   protected enviarComentario(): void {

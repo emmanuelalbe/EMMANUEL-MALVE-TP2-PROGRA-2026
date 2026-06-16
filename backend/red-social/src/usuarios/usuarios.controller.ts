@@ -1,15 +1,43 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { UsuariosService } from './usuarios.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
-import { UpdateUsuarioDto } from './dto/update-usuario.dto';
+import { HabilitarUsuarioDto } from './dto/habilitar-usuario.dto';
+
+const TAMAÑO_MAXIMO_IMAGEN = 2 * 1024 * 1024;
+const TIPOS_IMAGEN_PERMITIDOS = ['image/png', 'image/jpg', 'image/jpeg'];
 
 @Controller('usuarios')
 export class UsuariosController {
   constructor(private readonly usuariosService: UsuariosService) {}
 
   @Post()
-  create(@Body() createUsuarioDto: CreateUsuarioDto) {
-    return this.usuariosService.create(createUsuarioDto);
+  @UseInterceptors(FileInterceptor('imagenPerfil'))
+  create(
+    @Body() createUsuarioDto: CreateUsuarioDto,
+    @UploadedFile() imagenPerfil?: Express.Multer.File,
+  ) {
+    if (imagenPerfil) {
+      if (imagenPerfil.size > TAMAÑO_MAXIMO_IMAGEN) {
+        throw new BadRequestException('archivo muy grande');
+      }
+
+      if (!TIPOS_IMAGEN_PERMITIDOS.includes(imagenPerfil.mimetype)) {
+        throw new BadRequestException('tipo no permitido');
+      }
+    }
+
+    return this.usuariosService.create(createUsuarioDto, imagenPerfil);
   }
 
   @Get()
@@ -17,18 +45,16 @@ export class UsuariosController {
     return this.usuariosService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usuariosService.findOne(+id);
+  @Get(':id/estado')
+  obtenerEstado(@Param('id') id: string) {
+    return this.usuariosService.obtenerEstado(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUsuarioDto: UpdateUsuarioDto) {
-    return this.usuariosService.update(+id, updateUsuarioDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usuariosService.remove(+id);
+  @Patch(':id/habilitacion')
+  cambiarHabilitacion(
+    @Param('id') id: string,
+    @Body() datos: HabilitarUsuarioDto,
+  ) {
+    return this.usuariosService.cambiarHabilitacion(id, datos.habilitado);
   }
 }

@@ -18,6 +18,10 @@ export class App {
     return this.autenticacionService.estaAutenticado();
   }
 
+  protected get esAdministrador(): boolean {
+    return this.autenticacionService.obtenerSesion()?.perfil === 'administrador';
+  }
+
   protected extenderSesion(): void {
     this.sesionService.extenderSesion();
   }

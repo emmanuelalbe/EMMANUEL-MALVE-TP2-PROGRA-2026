@@ -25,7 +25,16 @@
     }
 
     <div class="card-body">
-      <h1 class="h3 mb-2">{{ publicacion.titulo }}</h1>
+      <div class="d-flex flex-column flex-md-row justify-content-between gap-2 mb-2">
+        <h1 class="h3 mb-0">{{ publicacion.titulo }}</h1>
+
+        @if (puedeEliminar) {
+          <button class="btn btn-danger" type="button" (click)="eliminarPublicacion()">
+            Eliminar publicacion
+          </button>
+        }
+      </div>
+
       <p class="text-secondary small mb-3">
         {{ publicacion.usuario.nombre }} {{ publicacion.usuario.apellido }}
         · {{ publicacion.fechaCreacion | date: 'short' }}

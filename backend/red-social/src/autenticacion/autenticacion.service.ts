@@ -69,6 +69,7 @@ export class AutenticacionService {
       descripcion: usuario.descripcion,
       imagenPerfilUrl,
       perfil: 'usuario',
+      habilitado: true,
     });
 
     return this.respuestaConToken(usuarioCreado);
@@ -84,6 +85,10 @@ export class AutenticacionService {
 
     if (!usuarioEncontrado) {
       throw new UnauthorizedException('Usuario o contraseña incorrectos');
+    }
+
+    if (usuarioEncontrado.habilitado === false) {
+      throw new UnauthorizedException('El usuario esta deshabilitado');
     }
 
     const contraseñaCorrecta = await bcrypt.compare(
@@ -106,11 +111,20 @@ export class AutenticacionService {
       throw new UnauthorizedException('Token invalido');
     }
 
+    if (usuario.habilitado === false) {
+      throw new UnauthorizedException('El usuario esta deshabilitado');
+    }
+
     return this.sinContraseña(usuario);
   }
 
   async refrescar(token: string) {
     const payload = await this.validarToken(token);
+    const usuario = await this.usuarioModel.findById(payload.sub);
+
+    if (!usuario || usuario.habilitado === false) {
+      throw new UnauthorizedException('El usuario esta deshabilitado');
+    }
 
     return {
       token: await this.generarToken({

@@ -1,0 +1,10 @@
+.form-check {
+  align-items: center;
+  display: flex;
+  gap: 0.4rem;
+}
+
+.table td,
+.table th {
+  white-space: nowrap;
+}

@@ -8,8 +8,11 @@ export interface Usuario {
   descripcion: string;
   imagenPerfilUrl?: string;
   perfil: string;
+  habilitado?: boolean;
   token?: string;
 }
+
+export type PerfilUsuario = 'usuario' | 'administrador';
 
 export interface RefrescarResponse {
   token: string;
@@ -29,4 +32,8 @@ export interface RegistroRequest {
   repetirPassword: string;
   fechaNacimiento: string;
   descripcion: string;
+}
+
+export interface CrearUsuarioRequest extends RegistroRequest {
+  perfil: PerfilUsuario;
 }

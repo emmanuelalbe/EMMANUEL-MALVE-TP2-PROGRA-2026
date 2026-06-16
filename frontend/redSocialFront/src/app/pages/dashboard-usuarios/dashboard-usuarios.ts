@@ -1,0 +1,177 @@
+import { DatePipe } from '@angular/common';
+import { Component, inject, OnInit } from '@angular/core';
+import {
+  AbstractControl,
+  FormBuilder,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
+import { obtenerMensajeError } from '../../core/http-error';
+import { PerfilUsuario, Usuario } from '../../models/usuario';
+import { UsuariosService } from '../../services/usuarios.service';
+
+@Component({
+  selector: 'app-dashboard-usuarios',
+  imports: [DatePipe, ReactiveFormsModule],
+  templateUrl: './dashboard-usuarios.html',
+  styleUrl: './dashboard-usuarios.css',
+})
+export class DashboardUsuariosComponent implements OnInit {
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly usuariosService = inject(UsuariosService);
+  private readonly passwordPattern = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+  protected usuarios: Usuario[] = [];
+  protected cargando = false;
+  protected creando = false;
+  protected mensajeError = '';
+  protected mensajeExito = '';
+  protected imagenPerfil: File | null = null;
+
+  protected readonly usuarioForm = this.formBuilder.nonNullable.group(
+    {
+      nombre: ['', Validators.required],
+      apellido: ['', Validators.required],
+      correo: ['', [Validators.required, Validators.email]],
+      nombreUsuario: ['', Validators.required],
+      password: ['', [Validators.required, Validators.pattern(this.passwordPattern)]],
+      repetirPassword: ['', Validators.required],
+      fechaNacimiento: ['', Validators.required],
+      descripcion: ['', Validators.required],
+      perfil: ['usuario' as PerfilUsuario, Validators.required],
+    },
+    { validators: this.passwordsMatchValidator },
+  );
+
+  ngOnInit(): void {
+    this.cargarUsuarios();
+  }
+
+  protected crearUsuario(): void {
+    if (this.usuarioForm.invalid) {
+      this.usuarioForm.markAllAsTouched();
+      return;
+    }
+
+    this.creando = true;
+    this.mensajeError = '';
+    this.mensajeExito = '';
+
+    const datos = this.usuarioForm.getRawValue();
+    const formData = new FormData();
+
+    formData.append('nombre', datos.nombre);
+    formData.append('apellido', datos.apellido);
+    formData.append('correo', datos.correo);
+    formData.append('nombreUsuario', datos.nombreUsuario);
+    formData.append('password', datos.password);
+    formData.append('repetirPassword', datos.repetirPassword);
+    formData.append('fechaNacimiento', datos.fechaNacimiento);
+    formData.append('descripcion', datos.descripcion);
+    formData.append('perfil', datos.perfil);
+
+    if (this.imagenPerfil) {
+      formData.append('imagenPerfil', this.imagenPerfil);
+    }
+
+    this.usuariosService.crear(formData).subscribe({
+      next: (usuario) => {
+        this.usuarios = [...this.usuarios, usuario].sort((a, b) =>
+          a.nombre.localeCompare(b.nombre),
+        );
+        this.usuarioForm.reset({ perfil: 'usuario' });
+        this.imagenPerfil = null;
+        this.creando = false;
+        this.mensajeExito = 'Usuario creado correctamente.';
+      },
+      error: (error) => {
+        this.creando = false;
+        this.mensajeError = obtenerMensajeError(error);
+      },
+    });
+  }
+
+  protected seleccionarImagenPerfil(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.imagenPerfil = input.files?.[0] ?? null;
+  }
+
+  protected showError(
+    controlName: keyof typeof this.usuarioForm.controls,
+    error?: string,
+  ): boolean {
+    const control = this.usuarioForm.controls[controlName];
+    return control.touched && (error ? control.hasError(error) : control.invalid);
+  }
+
+  protected passwordsMismatch(): boolean {
+    return (
+      this.usuarioForm.controls.repetirPassword.touched &&
+      this.usuarioForm.hasError('passwordMismatch')
+    );
+  }
+
+  protected estaHabilitado(usuario: Usuario): boolean {
+    return usuario.habilitado !== false;
+  }
+
+  protected cambiarHabilitacion(usuario: Usuario): void {
+    if (!usuario._id) {
+      return;
+    }
+
+    const habilitado = !this.estaHabilitado(usuario);
+    const accion = habilitado ? 'habilitar' : 'deshabilitar';
+    const confirmar = window.confirm(
+      `Estas seguro de ${accion} a ${usuario.nombreUsuario}?`,
+    );
+
+    if (!confirmar) {
+      return;
+    }
+
+    this.mensajeError = '';
+    this.mensajeExito = '';
+
+    this.usuariosService.cambiarHabilitacion(usuario._id, habilitado).subscribe({
+      next: (usuarioActualizado) => {
+        this.usuarios = this.usuarios.map((item) =>
+          item._id === usuarioActualizado._id ? usuarioActualizado : item,
+        );
+        this.mensajeExito = habilitado
+          ? 'Usuario habilitado correctamente.'
+          : 'Usuario deshabilitado correctamente.';
+      },
+      error: (error) => {
+        this.mensajeError = obtenerMensajeError(error);
+      },
+    });
+  }
+
+  private cargarUsuarios(): void {
+    this.cargando = true;
+    this.mensajeError = '';
+
+    this.usuariosService.listar().subscribe({
+      next: (usuarios) => {
+        this.cargando = false;
+        this.usuarios = Array.isArray(usuarios) ? usuarios : [];
+      },
+      error: (error) => {
+        this.cargando = false;
+        this.usuarios = [];
+        this.mensajeError = obtenerMensajeError(error);
+      },
+    });
+  }
+
+  private passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {
+    const password = control.get('password')?.value;
+    const repetirPassword = control.get('repetirPassword')?.value;
+
+    return password && repetirPassword && password !== repetirPassword
+      ? { passwordMismatch: true }
+      : null;
+  }
+}

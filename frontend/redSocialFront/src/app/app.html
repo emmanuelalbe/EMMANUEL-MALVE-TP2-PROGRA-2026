@@ -6,6 +6,9 @@
       @if (estaAutenticado) {
         <a class="nav-link" routerLink="/publicaciones" routerLinkActive="active">Publicaciones</a>
         <a class="nav-link" routerLink="/mi-perfil" routerLinkActive="active">Mi perfil</a>
+        @if (esAdministrador) {
+          <a class="nav-link" routerLink="/dashboard/usuarios" routerLinkActive="active">Usuarios</a>
+        }
         <button class="btn btn-link nav-link" type="button" (click)="cerrarSesion()">Cerrar sesion</button>
       } @else {
         <a class="nav-link" routerLink="/login" routerLinkActive="active">Login</a>

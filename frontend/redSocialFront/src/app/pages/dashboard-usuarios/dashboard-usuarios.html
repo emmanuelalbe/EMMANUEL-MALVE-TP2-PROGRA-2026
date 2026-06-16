@@ -1,0 +1,198 @@
+<div class="d-flex flex-column flex-md-row justify-content-between gap-3 mb-4">
+  <div>
+    <p class="text-primary fw-bold text-uppercase small mb-1">Administrador</p>
+    <h1 class="h3 mb-1">Dashboard de usuarios</h1>
+    <p class="text-secondary mb-0">Listado y alta de usuarios del sistema.</p>
+  </div>
+</div>
+
+@if (mensajeError) {
+  <div class="alert alert-danger">{{ mensajeError }}</div>
+}
+
+@if (mensajeExito) {
+  <div class="alert alert-success">{{ mensajeExito }}</div>
+}
+
+<section class="card shadow-sm mb-4">
+  <div class="card-body">
+    <h2 class="h5 mb-3">Crear usuario</h2>
+
+    <form class="row g-3" [formGroup]="usuarioForm" (ngSubmit)="crearUsuario()" novalidate>
+      <div class="col-md-6">
+        <label class="form-label">Nombre</label>
+        <input class="form-control" type="text" formControlName="nombre" />
+        @if (showError('nombre', 'required')) {
+          <div class="text-danger small mt-1">El nombre es obligatorio.</div>
+        }
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Apellido</label>
+        <input class="form-control" type="text" formControlName="apellido" />
+        @if (showError('apellido', 'required')) {
+          <div class="text-danger small mt-1">El apellido es obligatorio.</div>
+        }
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Correo</label>
+        <input class="form-control" type="email" formControlName="correo" placeholder="email@dominio.com" />
+        @if (showError('correo', 'required')) {
+          <div class="text-danger small mt-1">El correo es obligatorio.</div>
+        }
+        @if (showError('correo', 'email')) {
+          <div class="text-danger small mt-1">El correo debe tener un formato valido.</div>
+        }
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Nombre de usuario</label>
+        <input class="form-control" type="text" formControlName="nombreUsuario" />
+        @if (showError('nombreUsuario', 'required')) {
+          <div class="text-danger small mt-1">El nombre de usuario es obligatorio.</div>
+        }
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Contrasena</label>
+        <input class="form-control" type="password" formControlName="password" />
+        @if (showError('password', 'required')) {
+          <div class="text-danger small mt-1">La contrasena es obligatoria.</div>
+        }
+        @if (showError('password', 'pattern')) {
+          <div class="text-danger small mt-1">
+            La contrasena debe tener al menos 8 caracteres, una mayuscula y un numero.
+          </div>
+        }
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Repetir contrasena</label>
+        <input class="form-control" type="password" formControlName="repetirPassword" />
+        @if (showError('repetirPassword', 'required')) {
+          <div class="text-danger small mt-1">Tenes que repetir la contrasena.</div>
+        }
+        @if (passwordsMismatch()) {
+          <div class="text-danger small mt-1">Las contrasenas no coinciden.</div>
+        }
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Fecha de nacimiento</label>
+        <input class="form-control" type="date" formControlName="fechaNacimiento" />
+        @if (showError('fechaNacimiento', 'required')) {
+          <div class="text-danger small mt-1">La fecha de nacimiento es obligatoria.</div>
+        }
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label" for="dashboardImagenPerfil">Foto de perfil</label>
+        <input
+          class="form-control"
+          id="dashboardImagenPerfil"
+          type="file"
+          accept="image/png,image/jpg,image/jpeg"
+          (change)="seleccionarImagenPerfil($event)"
+        />
+      </div>
+
+      <div class="col-12">
+        <label class="form-label">Perfil</label>
+        <div class="d-flex gap-4">
+          <label class="form-check">
+            <input class="form-check-input" type="radio" formControlName="perfil" value="usuario" />
+            <span class="form-check-label">Usuario</span>
+          </label>
+
+          <label class="form-check">
+            <input class="form-check-input" type="radio" formControlName="perfil" value="administrador" />
+            <span class="form-check-label">Administrador</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label">Descripcion breve</label>
+        <textarea
+          class="form-control"
+          rows="4"
+          formControlName="descripcion"
+          placeholder="Contanos algo sobre el usuario"
+        ></textarea>
+        @if (showError('descripcion', 'required')) {
+          <div class="text-danger small mt-1">La descripcion es obligatoria.</div>
+        }
+      </div>
+
+      <div class="col-12">
+        <button class="btn btn-primary" type="submit" [disabled]="creando">
+          {{ creando ? 'Creando usuario...' : 'Crear usuario' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<section class="card shadow-sm">
+  <div class="card-body">
+    <h2 class="h5 mb-3">Usuarios registrados</h2>
+
+    @if (cargando) {
+      <div class="alert alert-info">Cargando usuarios...</div>
+    }
+
+    @if (!cargando && usuarios.length === 0) {
+      <div class="alert alert-secondary">Todavia no hay usuarios para mostrar.</div>
+    }
+
+    @if (!cargando && usuarios.length > 0) {
+      <div class="table-responsive">
+        <table class="table table-striped align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Usuario</th>
+              <th>Correo</th>
+              <th>Perfil</th>
+              <th>Estado</th>
+              <th>Fecha de nacimiento</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (usuario of usuarios; track usuario._id) {
+              <tr>
+                <td>{{ usuario.nombre }} {{ usuario.apellido }}</td>
+                <td>@{{ usuario.nombreUsuario }}</td>
+                <td>{{ usuario.correo }}</td>
+                <td>
+                  <span class="badge" [class.text-bg-danger]="usuario.perfil === 'administrador'" [class.text-bg-secondary]="usuario.perfil !== 'administrador'">
+                    {{ usuario.perfil }}
+                  </span>
+                </td>
+                <td>
+                  <span class="badge" [class.text-bg-success]="estaHabilitado(usuario)" [class.text-bg-warning]="!estaHabilitado(usuario)">
+                    {{ estaHabilitado(usuario) ? 'habilitado' : 'deshabilitado' }}
+                  </span>
+                </td>
+                <td>{{ usuario.fechaNacimiento | date: 'longDate' }}</td>
+                <td>
+                  <button
+                    class="btn btn-sm"
+                    [class.btn-outline-danger]="estaHabilitado(usuario)"
+                    [class.btn-outline-success]="!estaHabilitado(usuario)"
+                    type="button"
+                    (click)="cambiarHabilitacion(usuario)"
+                  >
+                    {{ estaHabilitado(usuario) ? 'Deshabilitar' : 'Habilitar' }}
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</section>
