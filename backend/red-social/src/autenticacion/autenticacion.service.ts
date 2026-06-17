@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -134,6 +135,21 @@ export class AutenticacionService {
         perfil: payload.perfil,
       }),
     };
+  }
+
+  async validarAdministrador(token: string) {
+    const payload = await this.validarToken(token);
+    const usuario = await this.usuarioModel.findById(payload.sub);
+
+    if (!usuario || usuario.habilitado === false) {
+      throw new UnauthorizedException('Token invalido');
+    }
+
+    if (usuario.perfil !== 'administrador') {
+      throw new ForbiddenException('Se requiere perfil administrador');
+    }
+
+    return payload;
   }
 
   private async respuestaConToken(usuario: Usuario & { _id: unknown }) {

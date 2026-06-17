@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { CloudinaryService } from '../publicaciones/cloudinary.service';
 import { AutenticacionController } from './autenticacion.controller';
 import { AutenticacionService } from './autenticacion.service';
+import { AdminGuard } from './guards/admin.guard';
 import { Usuario, UsuarioSchema } from './usuario.schema';
 
 @Module({
@@ -12,6 +13,7 @@ import { Usuario, UsuarioSchema } from './usuario.schema';
     JwtModule.register({}),
   ],
   controllers: [AutenticacionController],
-  providers: [AutenticacionService, CloudinaryService],
+  providers: [AutenticacionService, CloudinaryService, AdminGuard],
+  exports: [AutenticacionService, AdminGuard],
 })
 export class AutenticacionModule {}

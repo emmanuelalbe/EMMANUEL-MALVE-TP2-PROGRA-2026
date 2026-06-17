@@ -7,15 +7,18 @@ import {
   Param,
   Post,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { AdminGuard } from '../autenticacion/guards/admin.guard';
 import { UsuariosService } from './usuarios.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 
 const TAMAÑO_MAXIMO_IMAGEN = 2 * 1024 * 1024;
 const TIPOS_IMAGEN_PERMITIDOS = ['image/png', 'image/jpg', 'image/jpeg'];
 
+@UseGuards(AdminGuard)
 @Controller('usuarios')
 export class UsuariosController {
   constructor(private readonly usuariosService: UsuariosService) {}
