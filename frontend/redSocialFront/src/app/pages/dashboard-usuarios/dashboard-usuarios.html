@@ -6,14 +6,6 @@
   </div>
 </div>
 
-@if (mensajeError) {
-  <div class="alert alert-danger">{{ mensajeError }}</div>
-}
-
-@if (mensajeExito) {
-  <div class="alert alert-success">{{ mensajeExito }}</div>
-}
-
 <section class="card shadow-sm mb-4">
   <div class="card-body">
     <h2 class="h5 mb-3">Crear usuario</h2>
@@ -196,3 +188,10 @@
     }
   </div>
 </section>
+
+<app-mensaje-modal
+  [visible]="modalVisible"
+  [tipo]="modalTipo"
+  [mensaje]="modalMensaje"
+  (cerrar)="cerrarModal()"
+/>

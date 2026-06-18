@@ -49,15 +49,11 @@
   </section>
 }
 
-@if (mensajeError) {
-  <div class="alert alert-danger">{{ mensajeError }}</div>
-}
-
 @if (cargando) {
   <div class="alert alert-info">Cargando publicaciones...</div>
 }
 
-@if (!cargando && publicaciones.length === 0 && !mensajeError) {
+@if (!cargando && publicaciones.length === 0 && !errorCarga) {
   <div class="alert alert-secondary">Todavia no hay publicaciones para mostrar.</div>
 }
 
@@ -90,3 +86,10 @@
     Siguiente
   </button>
 </div>
+
+<app-mensaje-modal
+  [visible]="modalVisible"
+  [tipo]="modalTipo"
+  [mensaje]="modalMensaje"
+  (cerrar)="cerrarModal()"
+/>

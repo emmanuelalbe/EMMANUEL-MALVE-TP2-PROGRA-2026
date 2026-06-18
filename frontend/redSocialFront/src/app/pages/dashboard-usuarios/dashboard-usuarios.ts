@@ -8,12 +8,16 @@ import {
   Validators,
 } from '@angular/forms';
 import { obtenerMensajeError } from '../../core/http-error';
+import {
+  MensajeModalComponent,
+  ModalTipo,
+} from '../../components/mensaje-modal/mensaje-modal';
 import { PerfilUsuario, Usuario } from '../../models/usuario';
 import { UsuariosService } from '../../services/usuarios.service';
 
 @Component({
   selector: 'app-dashboard-usuarios',
-  imports: [DatePipe, ReactiveFormsModule],
+  imports: [DatePipe, MensajeModalComponent, ReactiveFormsModule],
   templateUrl: './dashboard-usuarios.html',
   styleUrl: './dashboard-usuarios.css',
 })
@@ -25,8 +29,9 @@ export class DashboardUsuariosComponent implements OnInit {
   protected usuarios: Usuario[] = [];
   protected cargando = false;
   protected creando = false;
-  protected mensajeError = '';
-  protected mensajeExito = '';
+  protected modalVisible = false;
+  protected modalTipo: ModalTipo = 'error';
+  protected modalMensaje = '';
   protected imagenPerfil: File | null = null;
 
   protected readonly usuarioForm = this.formBuilder.nonNullable.group(
@@ -55,8 +60,6 @@ export class DashboardUsuariosComponent implements OnInit {
     }
 
     this.creando = true;
-    this.mensajeError = '';
-    this.mensajeExito = '';
 
     const datos = this.usuarioForm.getRawValue();
     const formData = new FormData();
@@ -83,11 +86,11 @@ export class DashboardUsuariosComponent implements OnInit {
         this.usuarioForm.reset({ perfil: 'usuario' });
         this.imagenPerfil = null;
         this.creando = false;
-        this.mensajeExito = 'Usuario creado correctamente.';
+        this.mostrarModal('exito', 'Usuario creado correctamente.');
       },
       error: (error) => {
         this.creando = false;
-        this.mensajeError = obtenerMensajeError(error);
+        this.mostrarModal('error', obtenerMensajeError(error));
       },
     });
   }
@@ -95,6 +98,10 @@ export class DashboardUsuariosComponent implements OnInit {
   protected seleccionarImagenPerfil(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.imagenPerfil = input.files?.[0] ?? null;
+  }
+
+  protected cerrarModal(): void {
+    this.modalVisible = false;
   }
 
   protected showError(
@@ -131,9 +138,6 @@ export class DashboardUsuariosComponent implements OnInit {
       return;
     }
 
-    this.mensajeError = '';
-    this.mensajeExito = '';
-
     const request = habilitado
       ? this.usuariosService.deshabilitar(usuario._id)
       : this.usuariosService.rehabilitar(usuario._id);
@@ -143,19 +147,21 @@ export class DashboardUsuariosComponent implements OnInit {
         this.usuarios = this.usuarios.map((item) =>
           item._id === usuarioActualizado._id ? usuarioActualizado : item,
         );
-        this.mensajeExito = habilitado
-          ? 'Usuario deshabilitado correctamente.'
-          : 'Usuario habilitado correctamente.';
+        this.mostrarModal(
+          'exito',
+          habilitado
+            ? 'Usuario deshabilitado correctamente.'
+            : 'Usuario habilitado correctamente.',
+        );
       },
       error: (error) => {
-        this.mensajeError = obtenerMensajeError(error);
+        this.mostrarModal('error', obtenerMensajeError(error));
       },
     });
   }
 
   private cargarUsuarios(): void {
     this.cargando = true;
-    this.mensajeError = '';
 
     this.usuariosService.listar().subscribe({
       next: (usuarios) => {
@@ -165,9 +171,15 @@ export class DashboardUsuariosComponent implements OnInit {
       error: (error) => {
         this.cargando = false;
         this.usuarios = [];
-        this.mensajeError = obtenerMensajeError(error);
+        this.mostrarModal('error', obtenerMensajeError(error));
       },
     });
+  }
+
+  private mostrarModal(tipo: ModalTipo, mensaje: string): void {
+    this.modalTipo = tipo;
+    this.modalMensaje = mensaje;
+    this.modalVisible = true;
   }
 
   private passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {

@@ -1,13 +1,17 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import {
+  MensajeModalComponent,
+  ModalTipo,
+} from '../../components/mensaje-modal/mensaje-modal';
 import { obtenerMensajeError } from '../../core/http-error';
 import { AutenticacionService } from '../../services/autenticacion.service';
 import { SesionService } from '../../services/sesion.service';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [MensajeModalComponent, ReactiveFormsModule, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -21,7 +25,10 @@ export class LoginComponent {
   private readonly passwordPattern = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
 
   protected cargando = false;
-  protected mensajeError = '';
+  protected modalVisible = false;
+  protected modalTipo: ModalTipo = 'error';
+  protected modalMensaje = '';
+  private redirigirTrasCerrar = false;
 
   protected readonly loginForm = this.formBuilder.nonNullable.group({
     identifier: ['', Validators.required],
@@ -35,20 +42,35 @@ export class LoginComponent {
     }
 
     this.cargando = true;
-    this.mensajeError = '';
 
     this.autenticacionService.login(this.loginForm.getRawValue()).subscribe({
       next: (usuario) => {
         this.autenticacionService.guardarSesion(usuario);
         this.sesionService.iniciarContador();
         this.cargando = false;
-        this.router.navigate(['/publicaciones']);
+        this.mostrarModal('exito', 'Inicio de sesion exitoso.', true);
       },
       error: (error) => {
         this.cargando = false;
-        this.mensajeError = obtenerMensajeError(error);
+        this.mostrarModal('error', obtenerMensajeError(error));
       },
     });
+  }
+
+  protected cerrarModal(): void {
+    this.modalVisible = false;
+
+    if (this.redirigirTrasCerrar) {
+      this.redirigirTrasCerrar = false;
+      this.router.navigate(['/publicaciones']);
+    }
+  }
+
+  private mostrarModal(tipo: ModalTipo, mensaje: string, redirigir = false): void {
+    this.modalTipo = tipo;
+    this.modalMensaje = mensaje;
+    this.redirigirTrasCerrar = redirigir;
+    this.modalVisible = true;
   }
 
   protected showError(controlName: 'identifier' | 'password', error?: string): boolean {

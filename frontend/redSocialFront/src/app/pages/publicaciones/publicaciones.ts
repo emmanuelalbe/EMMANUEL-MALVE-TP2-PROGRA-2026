@@ -1,5 +1,9 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  MensajeModalComponent,
+  ModalTipo,
+} from '../../components/mensaje-modal/mensaje-modal';
 import { obtenerMensajeError } from '../../core/http-error';
 import { PublicacionComponent } from '../../components/publicacion/publicacion';
 import { OrdenPublicaciones, Publicacion } from '../../models/publicacion';
@@ -9,7 +13,7 @@ import { PublicacionesService } from '../../services/publicaciones.service';
 
 @Component({
   selector: 'app-publicaciones',
-  imports: [PublicacionComponent, ReactiveFormsModule],
+  imports: [MensajeModalComponent, PublicacionComponent, ReactiveFormsModule],
   templateUrl: './publicaciones.html',
   styleUrl: './publicaciones.css',
 })
@@ -31,7 +35,10 @@ export class PublicacionesComponent implements OnInit {
   protected readonly limit = 5;
   protected hayPaginaSiguiente = false;
   protected cargando = false;
-  protected mensajeError = '';
+  protected modalVisible = false;
+  protected modalTipo: ModalTipo = 'error';
+  protected modalMensaje = '';
+  protected errorCarga = false;
 
   ngOnInit(): void {
     this.cargarPublicaciones();
@@ -62,7 +69,7 @@ export class PublicacionesComponent implements OnInit {
     const usuarioId = this.usuarioActual?._id;
 
     if (!usuarioId) {
-      this.mensajeError = 'Tenes que iniciar sesion para dar me gusta.';
+      this.mostrarModal('error', 'Tenes que iniciar sesion para dar me gusta.');
       return;
     }
 
@@ -78,14 +85,14 @@ export class PublicacionesComponent implements OnInit {
         );
       },
       error: (error) => {
-        this.mensajeError = obtenerMensajeError(error);
+        this.mostrarModal('error', obtenerMensajeError(error));
       },
     });
   }
 
   protected eliminarPublicacion(publicacion: Publicacion): void {
     if (!this.usuarioActual) {
-      this.mensajeError = 'Tenes que iniciar sesion para eliminar publicaciones.';
+      this.mostrarModal('error', 'Tenes que iniciar sesion para eliminar publicaciones.');
       return;
     }
 
@@ -98,9 +105,10 @@ export class PublicacionesComponent implements OnInit {
     this.publicacionesService.eliminar(publicacion._id, this.usuarioActual).subscribe({
       next: () => {
         this.publicaciones = this.publicaciones.filter((item) => item._id !== publicacion._id);
+        this.mostrarModal('exito', 'Publicacion eliminada correctamente.');
       },
       error: (error) => {
-        this.mensajeError = obtenerMensajeError(error);
+        this.mostrarModal('error', obtenerMensajeError(error));
       },
     });
   }
@@ -126,7 +134,7 @@ export class PublicacionesComponent implements OnInit {
     const usuarioId = this.usuarioActual?._id;
 
     if (!usuarioId) {
-      this.mensajeError = 'Tenes que iniciar sesion para crear una publicacion.';
+      this.mostrarModal('error', 'Tenes que iniciar sesion para crear una publicacion.');
       return;
     }
 
@@ -153,11 +161,16 @@ export class PublicacionesComponent implements OnInit {
 
         this.offset = 0;
         this.cargarPublicaciones();
+        this.mostrarModal('exito', 'Publicacion cargada con exito.');
       },
       error: (error) => {
-        this.mensajeError = obtenerMensajeError(error);
+        this.mostrarModal('error', obtenerMensajeError(error));
       },
     });
+  }
+
+  protected cerrarModal(): void {
+    this.modalVisible = false;
   }
 
   protected get paginaActual(): number {
@@ -166,7 +179,7 @@ export class PublicacionesComponent implements OnInit {
 
   private cargarPublicaciones(): void {
     this.cargando = true;
-    this.mensajeError = '';
+    this.errorCarga = false;
 
     this.publicacionesService
       .listar({
@@ -181,7 +194,10 @@ export class PublicacionesComponent implements OnInit {
           if (!Array.isArray(publicaciones)) {
             this.publicaciones = [];
             this.hayPaginaSiguiente = false;
-            this.mensajeError = 'El backend de publicaciones todavia no esta implementado.';
+            this.mostrarModal(
+              'error',
+              'El backend de publicaciones todavia no esta implementado.',
+            );
             return;
           }
 
@@ -198,8 +214,15 @@ export class PublicacionesComponent implements OnInit {
           this.cargando = false;
           this.publicaciones = [];
           this.hayPaginaSiguiente = false;
-          this.mensajeError = obtenerMensajeError(error);
+          this.errorCarga = true;
+          this.mostrarModal('error', obtenerMensajeError(error));
         },
       });
+  }
+
+  private mostrarModal(tipo: ModalTipo, mensaje: string): void {
+    this.modalTipo = tipo;
+    this.modalMensaje = mensaje;
+    this.modalVisible = true;
   }
 }

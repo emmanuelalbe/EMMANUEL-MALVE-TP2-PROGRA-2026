@@ -33,10 +33,6 @@
     @if (showError('password', 'pattern')) {
       <div class="alert alert-danger py-2">Debe tener al menos 8 caracteres, una mayuscula y un numero.</div>
     }
-    @if (mensajeError) {
-      <div class="alert alert-danger py-2">{{ mensajeError }}</div>
-    }
-
       <button class="btn btn-primary w-100" type="submit" [disabled]="cargando">
         {{ cargando ? 'Ingresando...' : 'Ingresar' }}
       </button>
@@ -45,3 +41,10 @@
     <p class="text-secondary mb-0 mt-3">No tenes cuenta? <a routerLink="/registro">Registrate</a></p>
   </div>
 </section>
+
+<app-mensaje-modal
+  [visible]="modalVisible"
+  [tipo]="modalTipo"
+  [mensaje]="modalMensaje"
+  (cerrar)="cerrarModal()"
+/>

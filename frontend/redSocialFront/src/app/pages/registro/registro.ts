@@ -7,13 +7,17 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import {
+  MensajeModalComponent,
+  ModalTipo,
+} from '../../components/mensaje-modal/mensaje-modal';
 import { obtenerMensajeError } from '../../core/http-error';
 import { AutenticacionService } from '../../services/autenticacion.service';
 import { SesionService } from '../../services/sesion.service';
 
 @Component({
   selector: 'app-registro',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [MensajeModalComponent, ReactiveFormsModule, RouterLink],
   templateUrl: './registro.html',
   styleUrl: './registro.css',
 })
@@ -25,8 +29,11 @@ export class RegistroComponent {
   private readonly passwordPattern = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
 
   protected cargando = false;
-  protected mensajeError = '';
+  protected modalVisible = false;
+  protected modalTipo: ModalTipo = 'error';
+  protected modalMensaje = '';
   protected imagenPerfil: File | null = null;
+  private redirigirTrasCerrar = false;
 
   protected readonly registroForm = this.formBuilder.nonNullable.group(
     {
@@ -49,7 +56,6 @@ export class RegistroComponent {
     }
 
     this.cargando = true;
-    this.mensajeError = '';
 
     const datos = this.registroForm.getRawValue();
     const formData = new FormData();
@@ -72,13 +78,22 @@ export class RegistroComponent {
         this.autenticacionService.guardarSesion(usuario);
         this.sesionService.iniciarContador();
         this.cargando = false;
-        this.router.navigate(['/publicaciones']);
+        this.mostrarModal('exito', 'Cuenta creada correctamente.', true);
       },
       error: (error) => {
         this.cargando = false;
-        this.mensajeError = obtenerMensajeError(error);
+        this.mostrarModal('error', obtenerMensajeError(error));
       },
     });
+  }
+
+  protected cerrarModal(): void {
+    this.modalVisible = false;
+
+    if (this.redirigirTrasCerrar) {
+      this.redirigirTrasCerrar = false;
+      this.router.navigate(['/publicaciones']);
+    }
   }
 
   protected seleccionarImagenPerfil(event: Event): void {
@@ -99,6 +114,13 @@ export class RegistroComponent {
       this.registroForm.controls.repetirPassword.touched &&
       this.registroForm.hasError('passwordMismatch')
     );
+  }
+
+  private mostrarModal(tipo: ModalTipo, mensaje: string, redirigir = false): void {
+    this.modalTipo = tipo;
+    this.modalMensaje = mensaje;
+    this.redirigirTrasCerrar = redirigir;
+    this.modalVisible = true;
   }
 
   private passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {

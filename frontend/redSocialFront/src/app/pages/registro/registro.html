@@ -97,12 +97,6 @@
       </div>
 
       <div class="col-12">
-      @if (mensajeError) {
-        <div class="alert alert-danger py-2 mb-2">{{ mensajeError }}</div>
-      }
-      </div>
-
-      <div class="col-12">
         <button class="btn btn-primary w-100" type="submit" [disabled]="cargando">
           {{ cargando ? 'Creando cuenta...' : 'Crear cuenta' }}
         </button>
@@ -112,3 +106,10 @@
     <p class="text-secondary mb-0 mt-3">Ya tenes cuenta? <a routerLink="/login">Inicia sesion</a></p>
   </div>
 </section>
+
+<app-mensaje-modal
+  [visible]="modalVisible"
+  [tipo]="modalTipo"
+  [mensaje]="modalMensaje"
+  (cerrar)="cerrarModal()"
+/>
