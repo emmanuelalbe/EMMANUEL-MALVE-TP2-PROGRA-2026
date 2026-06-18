@@ -2,6 +2,10 @@ import { DatePipe } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import {
+  MensajeModalComponent,
+  ModalTipo,
+} from '../../components/mensaje-modal/mensaje-modal';
 import { obtenerMensajeError } from '../../core/http-error';
 import { resolverUrlImagen, tieneImagen } from '../../core/imagen.util';
 import { Comentario, Publicacion } from '../../models/publicacion';
@@ -11,7 +15,7 @@ import { PublicacionesService } from '../../services/publicaciones.service';
 
 @Component({
   selector: 'app-publicacion-detalle',
-  imports: [DatePipe, FormsModule, RouterLink],
+  imports: [DatePipe, FormsModule, MensajeModalComponent, RouterLink],
   templateUrl: './publicacion-detalle.html',
   styleUrl: './publicacion-detalle.css',
 })
@@ -32,14 +36,19 @@ export class PublicacionDetalleComponent implements OnInit {
   protected hayMasComentarios = false;
   protected cargando = true;
   protected cargandoComentarios = false;
-  protected mensajeError = '';
+  protected errorCarga = false;
+  protected modalVisible = false;
+  protected modalTipo: ModalTipo = 'error';
+  protected modalMensaje = '';
+  private redirigirTrasCerrar = false;
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
 
     if (!id) {
-      this.mensajeError = 'Publicacion no encontrada.';
+      this.errorCarga = true;
       this.cargando = false;
+      this.mostrarModal('error', 'Publicacion no encontrada.');
       return;
     }
 
@@ -74,7 +83,7 @@ export class PublicacionDetalleComponent implements OnInit {
 
   protected eliminarPublicacion(): void {
     if (!this.usuarioActual || !this.publicacion) {
-      this.mensajeError = 'Tenes que iniciar sesion para eliminar publicaciones.';
+      this.mostrarModal('error', 'Tenes que iniciar sesion para eliminar publicaciones.');
       return;
     }
 
@@ -86,12 +95,21 @@ export class PublicacionDetalleComponent implements OnInit {
 
     this.publicacionesService.eliminar(this.publicacion._id, this.usuarioActual).subscribe({
       next: () => {
-        this.router.navigate(['/publicaciones']);
+        this.mostrarModal('exito', 'Publicacion eliminada correctamente.', true);
       },
       error: (error) => {
-        this.mensajeError = obtenerMensajeError(error);
+        this.mostrarModal('error', obtenerMensajeError(error));
       },
     });
+  }
+
+  protected cerrarModal(): void {
+    this.modalVisible = false;
+
+    if (this.redirigirTrasCerrar) {
+      this.redirigirTrasCerrar = false;
+      this.router.navigate(['/publicaciones']);
+    }
   }
 
   protected enviarComentario(): void {
@@ -111,7 +129,7 @@ export class PublicacionDetalleComponent implements OnInit {
         this.cargarComentarios(publicacionId);
       },
       error: (error) => {
-        this.mensajeError = obtenerMensajeError(error);
+        this.mostrarModal('error', obtenerMensajeError(error));
       },
     });
   }
@@ -156,7 +174,7 @@ export class PublicacionDetalleComponent implements OnInit {
           this.cancelarEdicion();
         },
         error: (error) => {
-          this.mensajeError = obtenerMensajeError(error);
+          this.mostrarModal('error', obtenerMensajeError(error));
         },
       });
   }
@@ -173,7 +191,8 @@ export class PublicacionDetalleComponent implements OnInit {
       },
       error: (error) => {
         this.cargando = false;
-        this.mensajeError = obtenerMensajeError(error);
+        this.errorCarga = true;
+        this.mostrarModal('error', obtenerMensajeError(error));
       },
     });
   }
@@ -189,8 +208,15 @@ export class PublicacionDetalleComponent implements OnInit {
       },
       error: (error) => {
         this.cargandoComentarios = false;
-        this.mensajeError = obtenerMensajeError(error);
+        this.mostrarModal('error', obtenerMensajeError(error));
       },
     });
+  }
+
+  private mostrarModal(tipo: ModalTipo, mensaje: string, redirigir = false): void {
+    this.modalTipo = tipo;
+    this.modalMensaje = mensaje;
+    this.redirigirTrasCerrar = redirigir;
+    this.modalVisible = true;
   }
 }

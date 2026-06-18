@@ -45,15 +45,11 @@
   <section>
     <h2 class="h4 mb-3">Mis ultimas 3 publicaciones</h2>
 
-    @if (mensajeError) {
-      <div class="alert alert-danger">{{ mensajeError }}</div>
-    }
-
     @if (cargando) {
       <div class="alert alert-info">Cargando publicaciones...</div>
     }
 
-    @if (!cargando && ultimasPublicaciones.length === 0 && !mensajeError) {
+    @if (!cargando && ultimasPublicaciones.length === 0 && !errorCarga) {
       <div class="alert alert-secondary">Todavia no tenes publicaciones.</div>
     }
 
@@ -68,3 +64,10 @@
     }
   </section>
 }
+
+<app-mensaje-modal
+  [visible]="modalVisible"
+  [tipo]="modalTipo"
+  [mensaje]="modalMensaje"
+  (cerrar)="cerrarModal()"
+/>

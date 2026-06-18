@@ -1,9 +1,5 @@
 <a class="btn btn-link px-0 mb-3" routerLink="/publicaciones">Volver a publicaciones</a>
 
-@if (mensajeError) {
-  <div class="alert alert-danger">{{ mensajeError }}</div>
-}
-
 @if (cargando) {
   <div class="alert alert-info">Cargando publicacion...</div>
 }
@@ -114,3 +110,10 @@
     </div>
   </article>
 }
+
+<app-mensaje-modal
+  [visible]="modalVisible"
+  [tipo]="modalTipo"
+  [mensaje]="modalMensaje"
+  (cerrar)="cerrarModal()"
+/>
