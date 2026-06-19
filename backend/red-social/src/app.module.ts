@@ -20,6 +20,8 @@ import { UsuariosModule } from './usuarios/usuarios.module';
     MongooseModule.forRootAsync({inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         uri: configService.getOrThrow<string>('MONGO_URI'),
+        serverSelectionTimeoutMS: 10_000,
+        connectTimeoutMS: 10_000,
       }),
     }),
     UsuariosModule,

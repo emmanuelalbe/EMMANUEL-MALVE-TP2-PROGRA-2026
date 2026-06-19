@@ -1,11 +1,12 @@
 import { DatePipe } from '@angular/common';
-import { Pipe, PipeTransform } from '@angular/core';
+import { inject, LOCALE_ID, Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'fechaPublicacion',
 })
 export class FechaPublicacionPipe implements PipeTransform {
-  private readonly datePipe = new DatePipe('es-AR');
+  private readonly locale = inject(LOCALE_ID);
+  private readonly datePipe = new DatePipe(this.locale);
 
   transform(value: string | Date | null | undefined): string | null {
     if (!value) {
@@ -13,6 +14,11 @@ export class FechaPublicacionPipe implements PipeTransform {
     }
 
     const fecha = new Date(value);
+
+    if (Number.isNaN(fecha.getTime())) {
+      return null;
+    }
+
     const hoy = new Date();
 
     const esHoy =
@@ -22,7 +28,7 @@ export class FechaPublicacionPipe implements PipeTransform {
 
     if (esHoy) {
       const hora = this.datePipe.transform(fecha, 'shortTime');
-      return `hoy, ${hora}`;
+      return hora ? `hoy, ${hora}` : null;
     }
 
     return this.datePipe.transform(fecha, 'short');
