@@ -22,36 +22,36 @@ export class PublicacionesComponent implements OnInit {
   private readonly autenticacionService = inject(AutenticacionService);
   private readonly formBuilder = inject(FormBuilder);
 
-  protected publicaciones: Publicacion[] = [];
-  protected imagenPublicacion: File | null = null;
-  protected vistaPreviaImagen: string | null = null;
-  protected readonly publicacionForm = this.formBuilder.nonNullable.group({
+publicaciones: Publicacion[] = [];
+imagenPublicacion: File | null = null;
+vistaPreviaImagen: string | null = null;
+readonly publicacionForm = this.formBuilder.nonNullable.group({
     titulo: ['', Validators.required],
     descripcion: ['', Validators.required],
   });
-  protected usuarioActual: Usuario | null = this.autenticacionService.obtenerSesion();
-  protected orden: OrdenPublicaciones = 'fecha';
-  protected offset = 0;
-  protected readonly limit = 5;
-  protected hayPaginaSiguiente = false;
-  protected cargando = false;
-  protected modalVisible = false;
-  protected modalTipo: ModalTipo = 'error';
-  protected modalMensaje = '';
-  protected errorCarga = false;
+usuarioActual: Usuario | null = this.autenticacionService.obtenerSesion();
+orden: OrdenPublicaciones = 'fecha';
+offset = 0;
+readonly limit = 5;
+hayPaginaSiguiente = false;
+cargando = false;
+modalVisible = false;
+modalTipo: ModalTipo = 'error';
+modalMensaje = '';
+errorCarga = false;
 
   ngOnInit(): void {
     this.cargarPublicaciones();
   }
 
-  protected cambiarOrden(event: Event): void {
+cambiarOrden(event: Event): void {
     const select = event.target as HTMLSelectElement;
     this.orden = select.value as OrdenPublicaciones;
     this.offset = 0;
     this.cargarPublicaciones();
   }
 
-  protected paginaAnterior(): void {
+paginaAnterior(): void {
     if (this.offset === 0) {
       return;
     }
@@ -60,12 +60,12 @@ export class PublicacionesComponent implements OnInit {
     this.cargarPublicaciones();
   }
 
-  protected paginaSiguiente(): void {
+paginaSiguiente(): void {
     this.offset += this.limit;
     this.cargarPublicaciones();
   }
 
-  protected cambiarMeGusta(publicacion: Publicacion): void {
+cambiarMeGusta(publicacion: Publicacion): void {
     const usuarioId = this.usuarioActual?._id;
 
     if (!usuarioId) {
@@ -90,7 +90,7 @@ export class PublicacionesComponent implements OnInit {
     });
   }
 
-  protected eliminarPublicacion(publicacion: Publicacion): void {
+eliminarPublicacion(publicacion: Publicacion): void {
     if (!this.usuarioActual) {
       this.mostrarModal('error', 'Tenes que iniciar sesion para eliminar publicaciones.');
       return;
@@ -113,7 +113,7 @@ export class PublicacionesComponent implements OnInit {
     });
   }
 
-  protected seleccionarImagenPublicacion(event: Event): void {
+seleccionarImagenPublicacion(event: Event): void {
     const input = event.target as HTMLInputElement;
     const archivo = input.files?.[0] ?? null;
 
@@ -125,7 +125,7 @@ export class PublicacionesComponent implements OnInit {
     this.vistaPreviaImagen = archivo ? URL.createObjectURL(archivo) : null;
   }
 
-  protected crearPublicacion(): void {
+crearPublicacion(): void {
     if (this.publicacionForm.invalid) {
       this.publicacionForm.markAllAsTouched();
       return;
@@ -169,11 +169,11 @@ export class PublicacionesComponent implements OnInit {
     });
   }
 
-  protected cerrarModal(): void {
+cerrarModal(): void {
     this.modalVisible = false;
   }
 
-  protected get paginaActual(): number {
+get paginaActual(): number {
     return Math.floor(this.offset / this.limit) + 1;
   }
 

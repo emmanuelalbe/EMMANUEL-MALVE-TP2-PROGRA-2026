@@ -26,15 +26,15 @@ export class DashboardUsuariosComponent implements OnInit {
   private readonly usuariosService = inject(UsuariosService);
   private readonly passwordPattern = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
 
-  protected usuarios: Usuario[] = [];
-  protected cargando = false;
-  protected creando = false;
-  protected modalVisible = false;
-  protected modalTipo: ModalTipo = 'error';
-  protected modalMensaje = '';
-  protected imagenPerfil: File | null = null;
+usuarios: Usuario[] = [];
+cargando = false;
+creando = false;
+modalVisible = false;
+modalTipo: ModalTipo = 'error';
+modalMensaje = '';
+imagenPerfil: File | null = null;
 
-  protected readonly usuarioForm = this.formBuilder.nonNullable.group(
+readonly usuarioForm = this.formBuilder.nonNullable.group(
     {
       nombre: ['', Validators.required],
       apellido: ['', Validators.required],
@@ -53,7 +53,7 @@ export class DashboardUsuariosComponent implements OnInit {
     this.cargarUsuarios();
   }
 
-  protected crearUsuario(): void {
+crearUsuario(): void {
     if (this.usuarioForm.invalid) {
       this.usuarioForm.markAllAsTouched();
       return;
@@ -95,16 +95,16 @@ export class DashboardUsuariosComponent implements OnInit {
     });
   }
 
-  protected seleccionarImagenPerfil(event: Event): void {
+seleccionarImagenPerfil(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.imagenPerfil = input.files?.[0] ?? null;
   }
 
-  protected cerrarModal(): void {
+cerrarModal(): void {
     this.modalVisible = false;
   }
 
-  protected showError(
+showError(
     controlName: keyof typeof this.usuarioForm.controls,
     error?: string,
   ): boolean {
@@ -112,18 +112,18 @@ export class DashboardUsuariosComponent implements OnInit {
     return control.touched && (error ? control.hasError(error) : control.invalid);
   }
 
-  protected passwordsMismatch(): boolean {
+passwordsMismatch(): boolean {
     return (
       this.usuarioForm.controls.repetirPassword.touched &&
       this.usuarioForm.hasError('passwordMismatch')
     );
   }
 
-  protected estaHabilitado(usuario: Usuario): boolean {
+estaHabilitado(usuario: Usuario): boolean {
     return usuario.habilitado !== false;
   }
 
-  protected cambiarHabilitacion(usuario: Usuario): void {
+cambiarHabilitacion(usuario: Usuario): void {
     if (!usuario._id) {
       return;
     }

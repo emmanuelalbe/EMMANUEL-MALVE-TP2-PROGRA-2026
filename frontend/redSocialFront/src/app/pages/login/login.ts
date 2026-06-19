@@ -24,18 +24,18 @@ export class LoginComponent {
   private readonly router = inject(Router);
   private readonly passwordPattern = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
 
-  protected cargando = false;
-  protected modalVisible = false;
-  protected modalTipo: ModalTipo = 'error';
-  protected modalMensaje = '';
+cargando = false;
+modalVisible = false;
+modalTipo: ModalTipo = 'error';
+modalMensaje = '';
   private redirigirTrasCerrar = false;
 
-  protected readonly loginForm = this.formBuilder.nonNullable.group({
+readonly loginForm = this.formBuilder.nonNullable.group({
     identifier: ['', Validators.required],
     password: ['', [Validators.required, Validators.pattern(this.passwordPattern)]],
   });
 
-  protected onSubmit(): void {
+onSubmit(): void {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
       return;
@@ -57,7 +57,7 @@ export class LoginComponent {
     });
   }
 
-  protected cerrarModal(): void {
+cerrarModal(): void {
     this.modalVisible = false;
 
     if (this.redirigirTrasCerrar) {
@@ -73,7 +73,7 @@ export class LoginComponent {
     this.modalVisible = true;
   }
 
-  protected showError(controlName: 'identifier' | 'password', error?: string): boolean {
+showError(controlName: 'identifier' | 'password', error?: string): boolean {
     const control = this.loginForm.controls[controlName];
     return control.touched && (error ? control.hasError(error) : control.invalid);
   }

@@ -28,14 +28,14 @@ export class RegistroComponent {
   private readonly router = inject(Router);
   private readonly passwordPattern = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
 
-  protected cargando = false;
-  protected modalVisible = false;
-  protected modalTipo: ModalTipo = 'error';
-  protected modalMensaje = '';
-  protected imagenPerfil: File | null = null;
+cargando = false;
+modalVisible = false;
+modalTipo: ModalTipo = 'error';
+modalMensaje = '';
+imagenPerfil: File | null = null;
   private redirigirTrasCerrar = false;
 
-  protected readonly registroForm = this.formBuilder.nonNullable.group(
+readonly registroForm = this.formBuilder.nonNullable.group(
     {
       nombre: ['', Validators.required],
       apellido: ['', Validators.required],
@@ -49,7 +49,7 @@ export class RegistroComponent {
     { validators: this.passwordsMatchValidator },
   );
 
-  protected onSubmit(): void {
+onSubmit(): void {
     if (this.registroForm.invalid) {
       this.registroForm.markAllAsTouched();
       return;
@@ -87,7 +87,7 @@ export class RegistroComponent {
     });
   }
 
-  protected cerrarModal(): void {
+cerrarModal(): void {
     this.modalVisible = false;
 
     if (this.redirigirTrasCerrar) {
@@ -96,12 +96,12 @@ export class RegistroComponent {
     }
   }
 
-  protected seleccionarImagenPerfil(event: Event): void {
+seleccionarImagenPerfil(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.imagenPerfil = input.files?.[0] ?? null;
   }
 
-  protected showError(
+showError(
     controlName: keyof typeof this.registroForm.controls,
     error?: string,
   ): boolean {
@@ -109,7 +109,7 @@ export class RegistroComponent {
     return control.touched && (error ? control.hasError(error) : control.invalid);
   }
 
-  protected passwordsMismatch(): boolean {
+passwordsMismatch(): boolean {
     return (
       this.registroForm.controls.repetirPassword.touched &&
       this.registroForm.hasError('passwordMismatch')

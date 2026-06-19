@@ -28,6 +28,15 @@ export class SesionService {
     });
   }
 
+  rechazarExtension(): void {
+    if (this.timer) {
+      clearTimeout(this.timer);
+      this.timer = undefined;
+    }
+
+    this.mostrarModal.set(false);
+  }
+
   detenerContador(): void {
     if (this.timer) {
       clearTimeout(this.timer);

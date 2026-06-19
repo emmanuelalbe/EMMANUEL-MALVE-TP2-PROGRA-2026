@@ -25,21 +25,21 @@ export class PublicacionDetalleComponent implements OnInit {
   private readonly publicacionesService = inject(PublicacionesService);
   private readonly autenticacionService = inject(AutenticacionService);
 
-  protected publicacion: Publicacion | null = null;
-  protected comentarios: Comentario[] = [];
-  protected usuarioActual: Usuario | null = this.autenticacionService.obtenerSesion();
-  protected comentarioTexto = '';
-  protected comentarioEditandoId: string | null = null;
-  protected comentarioEditandoTexto = '';
-  protected offset = 0;
-  protected readonly limit = 3;
-  protected hayMasComentarios = false;
-  protected cargando = true;
-  protected cargandoComentarios = false;
-  protected errorCarga = false;
-  protected modalVisible = false;
-  protected modalTipo: ModalTipo = 'error';
-  protected modalMensaje = '';
+publicacion: Publicacion | null = null;
+comentarios: Comentario[] = [];
+usuarioActual: Usuario | null = this.autenticacionService.obtenerSesion();
+comentarioTexto = '';
+comentarioEditandoId: string | null = null;
+comentarioEditandoTexto = '';
+offset = 0;
+readonly limit = 3;
+hayMasComentarios = false;
+cargando = true;
+cargandoComentarios = false;
+errorCarga = false;
+modalVisible = false;
+modalTipo: ModalTipo = 'error';
+modalMensaje = '';
   private redirigirTrasCerrar = false;
 
   ngOnInit(): void {
@@ -56,21 +56,21 @@ export class PublicacionDetalleComponent implements OnInit {
     this.cargarComentarios(id);
   }
 
-  protected imagenVisible = true;
+imagenVisible = true;
 
-  protected get tieneImagenPublicacion(): boolean {
+get tieneImagenPublicacion(): boolean {
     return tieneImagen(this.publicacion?.imagenUrl) && this.imagenVisible;
   }
 
-  protected imagenPublicacion(): string {
+imagenPublicacion(): string {
     return resolverUrlImagen(this.publicacion?.imagenUrl);
   }
 
-  protected ocultarImagenRota(): void {
+ocultarImagenRota(): void {
     this.imagenVisible = false;
   }
 
-  protected get puedeEliminar(): boolean {
+get puedeEliminar(): boolean {
     const usuarioId = this.usuarioActual?._id;
 
     return (
@@ -81,7 +81,7 @@ export class PublicacionDetalleComponent implements OnInit {
     );
   }
 
-  protected eliminarPublicacion(): void {
+eliminarPublicacion(): void {
     if (!this.usuarioActual || !this.publicacion) {
       this.mostrarModal('error', 'Tenes que iniciar sesion para eliminar publicaciones.');
       return;
@@ -103,7 +103,7 @@ export class PublicacionDetalleComponent implements OnInit {
     });
   }
 
-  protected cerrarModal(): void {
+cerrarModal(): void {
     this.modalVisible = false;
 
     if (this.redirigirTrasCerrar) {
@@ -112,7 +112,7 @@ export class PublicacionDetalleComponent implements OnInit {
     }
   }
 
-  protected enviarComentario(): void {
+enviarComentario(): void {
     const usuarioId = this.usuarioActual?._id;
     const texto = this.comentarioTexto.trim();
     const publicacionId = this.publicacion?._id;
@@ -134,7 +134,7 @@ export class PublicacionDetalleComponent implements OnInit {
     });
   }
 
-  protected cargarMasComentarios(): void {
+cargarMasComentarios(): void {
     const publicacionId = this.publicacion?._id;
 
     if (!publicacionId) {
@@ -145,17 +145,17 @@ export class PublicacionDetalleComponent implements OnInit {
     this.cargarComentarios(publicacionId, true);
   }
 
-  protected iniciarEdicion(comentario: Comentario): void {
+iniciarEdicion(comentario: Comentario): void {
     this.comentarioEditandoId = comentario._id;
     this.comentarioEditandoTexto = comentario.texto;
   }
 
-  protected cancelarEdicion(): void {
+cancelarEdicion(): void {
     this.comentarioEditandoId = null;
     this.comentarioEditandoTexto = '';
   }
 
-  protected guardarEdicion(comentario: Comentario): void {
+guardarEdicion(comentario: Comentario): void {
     const usuarioId = this.usuarioActual?._id;
     const publicacionId = this.publicacion?._id;
     const texto = this.comentarioEditandoTexto.trim();
@@ -179,7 +179,7 @@ export class PublicacionDetalleComponent implements OnInit {
       });
   }
 
-  protected puedeEditar(comentario: Comentario): boolean {
+puedeEditar(comentario: Comentario): boolean {
     return this.usuarioActual?._id === comentario.usuario._id;
   }
 

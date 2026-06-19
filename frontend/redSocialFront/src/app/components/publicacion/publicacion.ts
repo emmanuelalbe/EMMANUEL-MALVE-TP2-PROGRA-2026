@@ -18,15 +18,15 @@ export class PublicacionComponent {
   @Output() cambiarMeGusta = new EventEmitter<Publicacion>();
   @Output() eliminar = new EventEmitter<Publicacion>();
 
-  protected readonly maxComentariosVisibles = 3;
-  protected comentariosExpandidos = false;
+readonly maxComentariosVisibles = 3;
+comentariosExpandidos = false;
 
-  protected get dioMeGusta(): boolean {
+get dioMeGusta(): boolean {
     const usuarioId = this.usuarioActual?._id;
     return usuarioId ? this.publicacion.usuariosMeGusta.includes(usuarioId) : false;
   }
 
-  protected get puedeEliminar(): boolean {
+get puedeEliminar(): boolean {
     const usuarioId = this.usuarioActual?._id;
     return (
       !!usuarioId &&
@@ -35,31 +35,31 @@ export class PublicacionComponent {
     );
   }
 
-  protected imagenVisible = true;
+imagenVisible = true;
 
-  protected get tieneImagenPublicacion(): boolean {
+get tieneImagenPublicacion(): boolean {
     return tieneImagen(this.publicacion.imagenUrl) && this.imagenVisible;
   }
 
-  protected imagenPublicacion(): string {
+imagenPublicacion(): string {
     return resolverUrlImagen(this.publicacion.imagenUrl);
   }
 
-  protected ocultarImagenRota(): void {
+ocultarImagenRota(): void {
     this.imagenVisible = false;
   }
 
-  protected get comentariosVisibles() {
+get comentariosVisibles() {
     return this.comentariosExpandidos
       ? this.publicacion.comentarios
       : this.publicacion.comentarios.slice(0, this.maxComentariosVisibles);
   }
 
-  protected get hayMasComentarios(): boolean {
+get hayMasComentarios(): boolean {
     return this.publicacion.comentarios.length > this.maxComentariosVisibles;
   }
 
-  protected alternarComentarios(): void {
+alternarComentarios(): void {
     this.comentariosExpandidos = !this.comentariosExpandidos;
   }
 }

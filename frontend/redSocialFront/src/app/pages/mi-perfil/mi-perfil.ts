@@ -22,32 +22,32 @@ export class MiPerfilComponent implements OnInit {
   private readonly autenticacionService = inject(AutenticacionService);
   private readonly publicacionesService = inject(PublicacionesService);
 
-  protected usuarioActual: Usuario | null = null;
-  protected ultimasPublicaciones: Publicacion[] = [];
-  protected cargando = false;
-  protected errorCarga = false;
-  protected modalVisible = false;
-  protected modalTipo: ModalTipo = 'error';
-  protected modalMensaje = '';
+usuarioActual: Usuario | null = null;
+ultimasPublicaciones: Publicacion[] = [];
+cargando = false;
+errorCarga = false;
+modalVisible = false;
+modalTipo: ModalTipo = 'error';
+modalMensaje = '';
 
   ngOnInit(): void {
     this.usuarioActual = this.autenticacionService.obtenerSesion();
     this.cargarUltimasPublicaciones();
   }
 
-  protected imagenPerfilUrl(): string {
+imagenPerfilUrl(): string {
     return resolverUrlImagen(this.usuarioActual?.imagenPerfilUrl);
   }
 
-  protected tieneImagenPerfil(): boolean {
+tieneImagenPerfil(): boolean {
     return tieneImagen(this.usuarioActual?.imagenPerfilUrl);
   }
 
-  protected cerrarModal(): void {
+cerrarModal(): void {
     this.modalVisible = false;
   }
 
-  protected cambiarMeGusta(publicacion: Publicacion): void {
+cambiarMeGusta(publicacion: Publicacion): void {
     const usuarioId = this.usuarioActual?._id;
 
     if (!usuarioId) {
@@ -72,7 +72,7 @@ export class MiPerfilComponent implements OnInit {
     });
   }
 
-  protected eliminarPublicacion(publicacion: Publicacion): void {
+eliminarPublicacion(publicacion: Publicacion): void {
     if (!this.usuarioActual) {
       this.mostrarModal('error', 'Tenes que iniciar sesion para eliminar publicaciones.');
       return;
@@ -97,7 +97,7 @@ export class MiPerfilComponent implements OnInit {
     });
   }
 
-  protected comentarPublicacion(evento: {
+comentarPublicacion(evento: {
     publicacion: Publicacion;
     texto: string;
   }): void {
