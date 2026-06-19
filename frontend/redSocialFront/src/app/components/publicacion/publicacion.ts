@@ -1,13 +1,13 @@
+import { DatePipe } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { resolverUrlImagen, tieneImagen } from '../../core/imagen.util';
 import { Publicacion } from '../../models/publicacion';
-import { FechaPublicacionPipe } from '../../pipes/fecha-publicacion.pipe';
 import { Usuario } from '../../models/usuario';
 
 @Component({
   selector: 'app-publicacion',
-  imports: [FechaPublicacionPipe, RouterLink],
+  imports: [DatePipe, RouterLink],
   templateUrl: './publicacion.html',
   styleUrl: './publicacion.css',
 })

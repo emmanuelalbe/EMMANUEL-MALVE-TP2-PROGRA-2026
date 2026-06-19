@@ -23,7 +23,7 @@
         </h2>
         <p class="publicacion-meta">
           {{ publicacion.usuario.nombre }} {{ publicacion.usuario.apellido }}
-          · {{ publicacion.fechaCreacion | fechaPublicacion }}
+          · {{ publicacion.fechaCreacion | date: 'short' }}
         </p>
       </div>
 
@@ -65,7 +65,7 @@
             <div class="publicacion-comentario">
               <p class="publicacion-comentario-texto">{{ comentario.texto }}</p>
               <p class="publicacion-comentario-meta">
-                {{ comentario.usuario.nombre }} · {{ comentario.fecha | fechaPublicacion }}
+                {{ comentario.usuario.nombre }} · {{ comentario.fecha | date: 'short' }}
                 @if (comentario.modificado) {
                   · editado
                 }

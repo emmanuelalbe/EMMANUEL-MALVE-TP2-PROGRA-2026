@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -8,14 +9,13 @@ import {
 import { obtenerMensajeError } from '../../core/http-error';
 import { resolverUrlImagen, tieneImagen } from '../../core/imagen.util';
 import { Comentario, Publicacion } from '../../models/publicacion';
-import { FechaPublicacionPipe } from '../../pipes/fecha-publicacion.pipe';
 import { Usuario } from '../../models/usuario';
 import { AutenticacionService } from '../../services/autenticacion.service';
 import { PublicacionesService } from '../../services/publicaciones.service';
 
 @Component({
   selector: 'app-publicacion-detalle',
-  imports: [FechaPublicacionPipe, FormsModule, MensajeModalComponent, RouterLink],
+  imports: [DatePipe, FormsModule, MensajeModalComponent, RouterLink],
   templateUrl: './publicacion-detalle.html',
   styleUrl: './publicacion-detalle.css',
 })
