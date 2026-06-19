@@ -8,7 +8,6 @@ import {
 import { resolverUrlImagen, tieneImagen } from '../../core/imagen.util';
 import { obtenerMensajeError } from '../../core/http-error';
 import { Publicacion } from '../../models/publicacion';
-import { Usuario } from '../../models/usuario';
 import { AutenticacionService } from '../../services/autenticacion.service';
 import { PublicacionesService } from '../../services/publicaciones.service';
 
@@ -22,7 +21,7 @@ export class MiPerfilComponent implements OnInit {
   private readonly autenticacionService = inject(AutenticacionService);
   private readonly publicacionesService = inject(PublicacionesService);
 
-usuarioActual: Usuario | null = null;
+readonly usuarioActual = this.autenticacionService.usuarioActual;
 ultimasPublicaciones: Publicacion[] = [];
 cargando = false;
 errorCarga = false;
@@ -31,16 +30,15 @@ modalTipo: ModalTipo = 'error';
 modalMensaje = '';
 
   ngOnInit(): void {
-    this.usuarioActual = this.autenticacionService.obtenerSesion();
     this.cargarUltimasPublicaciones();
   }
 
 imagenPerfilUrl(): string {
-    return resolverUrlImagen(this.usuarioActual?.imagenPerfilUrl);
+    return resolverUrlImagen(this.usuarioActual()?.imagenPerfilUrl);
   }
 
 tieneImagenPerfil(): boolean {
-    return tieneImagen(this.usuarioActual?.imagenPerfilUrl);
+    return tieneImagen(this.usuarioActual()?.imagenPerfilUrl);
   }
 
 cerrarModal(): void {
@@ -48,14 +46,14 @@ cerrarModal(): void {
   }
 
 cambiarMeGusta(publicacion: Publicacion): void {
-    const usuarioId = this.usuarioActual?._id;
+    const usuarioId = this.usuarioActual()?._id;
 
     if (!usuarioId) {
       this.mostrarModal('error', 'Tenes que iniciar sesion para dar me gusta.');
       return;
     }
 
-    const yaDioMeGusta = publicacion.usuariosMeGusta.includes(usuarioId);
+    const yaDioMeGusta = (publicacion.usuariosMeGusta ?? []).includes(usuarioId);
     const request = yaDioMeGusta
       ? this.publicacionesService.quitarMeGusta(publicacion._id, usuarioId)
       : this.publicacionesService.darMeGusta(publicacion._id, usuarioId);
@@ -73,7 +71,9 @@ cambiarMeGusta(publicacion: Publicacion): void {
   }
 
 eliminarPublicacion(publicacion: Publicacion): void {
-    if (!this.usuarioActual) {
+    const usuario = this.usuarioActual();
+
+    if (!usuario) {
       this.mostrarModal('error', 'Tenes que iniciar sesion para eliminar publicaciones.');
       return;
     }
@@ -84,7 +84,7 @@ eliminarPublicacion(publicacion: Publicacion): void {
       return;
     }
 
-    this.publicacionesService.eliminar(publicacion._id, this.usuarioActual).subscribe({
+    this.publicacionesService.eliminar(publicacion._id, usuario).subscribe({
       next: () => {
         this.ultimasPublicaciones = this.ultimasPublicaciones.filter(
           (item) => item._id !== publicacion._id,
@@ -101,7 +101,7 @@ comentarPublicacion(evento: {
     publicacion: Publicacion;
     texto: string;
   }): void {
-    const usuarioId = this.usuarioActual?._id;
+    const usuarioId = this.usuarioActual()?._id;
 
     if (!usuarioId) {
       this.mostrarModal('error', 'Tenes que iniciar sesion para comentar.');
@@ -123,7 +123,7 @@ comentarPublicacion(evento: {
   }
 
   private cargarUltimasPublicaciones(): void {
-    const usuarioId = this.usuarioActual?._id;
+    const usuarioId = this.usuarioActual()?._id;
 
     if (!usuarioId) {
       return;

@@ -22,7 +22,7 @@
           </a>
         </h2>
         <p class="publicacion-meta">
-          {{ publicacion.usuario.nombre }} {{ publicacion.usuario.apellido }}
+          {{ publicacion.usuario?.nombre }} {{ publicacion.usuario?.apellido }}
           · {{ publicacion.fechaCreacion | fechaPublicacion }}
         </p>
       </div>
@@ -47,7 +47,7 @@
         {{ dioMeGusta ? 'Quitar me gusta' : 'Me gusta' }}
       </button>
       <span class="publicacion-contador">
-        {{ publicacion.cantidadMeGusta }} me gusta
+        {{ publicacion.cantidadMeGusta ?? 0 }} me gusta
       </span>
     </div>
 
@@ -55,17 +55,17 @@
       <hr class="publicacion-separador" />
       <h3 class="publicacion-subtitulo">Comentarios</h3>
 
-      @if (publicacion.comentarios.length === 0) {
+      @if ((publicacion.comentarios ?? []).length === 0) {
         <p class="publicacion-texto-secundario">Esta publicacion no tiene comentarios.</p>
       }
 
-      @if (publicacion.comentarios.length > 0) {
+      @if ((publicacion.comentarios ?? []).length > 0) {
         <div class="publicacion-comentarios">
           @for (comentario of comentariosVisibles; track comentario._id) {
             <div class="publicacion-comentario">
               <p class="publicacion-comentario-texto">{{ comentario.texto }}</p>
               <p class="publicacion-comentario-meta">
-                {{ comentario.usuario.nombre }} · {{ comentario.fecha | fechaPublicacion }}
+                {{ comentario.usuario?.nombre }} · {{ comentario.fecha | fechaPublicacion }}
                 @if (comentario.modificado) {
                   · editado
                 }

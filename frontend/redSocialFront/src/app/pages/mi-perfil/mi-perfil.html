@@ -1,10 +1,10 @@
 <h1 class="h3 mb-4">Mi perfil</h1>
 
-@if (!usuarioActual) {
+@if (!usuarioActual()) {
   <div class="alert alert-warning">Tenes que iniciar sesion para ver tu perfil.</div>
 }
 
-@if (usuarioActual) {
+@if (usuarioActual(); as usuario) {
   <section class="card shadow-sm mb-4">
     <div class="card-body">
       <div class="d-flex flex-column flex-md-row gap-4">
@@ -12,7 +12,7 @@
           <img
             class="perfil-imagen"
             [src]="imagenPerfilUrl()"
-            [alt]="usuarioActual.nombre + ' ' + usuarioActual.apellido"
+            [alt]="usuario.nombre + ' ' + usuario.apellido"
           />
         } @else {
           <div class="perfil-imagen perfil-sin-imagen d-flex align-items-center justify-content-center">
@@ -21,21 +21,21 @@
         }
 
         <div class="flex-grow-1">
-          <h2 class="h4 mb-1">{{ usuarioActual.nombre }} {{ usuarioActual.apellido }}</h2>
-          <p class="text-secondary mb-3">@{{ usuarioActual.nombreUsuario }}</p>
+          <h2 class="h4 mb-1">{{ usuario.nombre }} {{ usuario.apellido }}</h2>
+          <p class="text-secondary mb-3">@{{ usuario.nombreUsuario }}</p>
 
           <dl class="row mb-0">
             <dt class="col-sm-4">Correo</dt>
-            <dd class="col-sm-8">{{ usuarioActual.correo }}</dd>
+            <dd class="col-sm-8">{{ usuario.correo }}</dd>
 
             <dt class="col-sm-4">Fecha de nacimiento</dt>
-            <dd class="col-sm-8">{{ usuarioActual.fechaNacimiento | date: 'longDate' }}</dd>
+            <dd class="col-sm-8">{{ usuario.fechaNacimiento | date: 'longDate' }}</dd>
 
             <dt class="col-sm-4">Perfil</dt>
-            <dd class="col-sm-8">{{ usuarioActual.perfil }}</dd>
+            <dd class="col-sm-8">{{ usuario.perfil }}</dd>
 
             <dt class="col-sm-4">Descripcion</dt>
-            <dd class="col-sm-8">{{ usuarioActual.descripcion }}</dd>
+            <dd class="col-sm-8">{{ usuario.descripcion }}</dd>
           </dl>
         </div>
       </div>
@@ -56,7 +56,7 @@
     @for (publicacion of ultimasPublicaciones; track publicacion._id) {
       <app-publicacion
         [publicacion]="publicacion"
-        [usuarioActual]="usuarioActual"
+        [usuarioActual]="usuarioActual()"
         [mostrarComentarios]="true"
         (cambiarMeGusta)="cambiarMeGusta($event)"
         (eliminar)="eliminarPublicacion($event)"

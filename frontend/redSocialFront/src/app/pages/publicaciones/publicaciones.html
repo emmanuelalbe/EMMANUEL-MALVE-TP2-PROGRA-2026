@@ -12,7 +12,7 @@
   </div>
 </div>
 
-@if (usuarioActual) {
+@if (usuarioActual()) {
   <section class="card shadow-sm mb-4">
     <div class="card-body">
       <h2 class="h5 mb-3">Crear publicacion</h2>
@@ -67,7 +67,7 @@
     @for (publicacion of publicaciones; track publicacion._id) {
       <app-publicacion
         [publicacion]="publicacion"
-        [usuarioActual]="usuarioActual"
+        [usuarioActual]="usuarioActual()"
         (cambiarMeGusta)="cambiarMeGusta($event)"
         (eliminar)="eliminarPublicacion($event)"
       />

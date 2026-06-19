@@ -253,8 +253,8 @@ export class PublicacionesService {
       usuario: usuario
         ? this.usuarioSinContraseña(usuario as DocumentoConObjeto<Usuario>)
         : this.usuarioNoEncontrado(publicacionObjeto.usuarioId),
-      cantidadMeGusta: publicacionObjeto.usuariosMeGusta.length,
-      usuariosMeGusta: publicacionObjeto.usuariosMeGusta,
+      cantidadMeGusta: (publicacionObjeto.usuariosMeGusta ?? []).length,
+      usuariosMeGusta: publicacionObjeto.usuariosMeGusta ?? [],
       comentarios,
     };
   }

@@ -7,7 +7,6 @@ import {
 import { obtenerMensajeError } from '../../core/http-error';
 import { PublicacionComponent } from '../../components/publicacion/publicacion';
 import { OrdenPublicaciones, Publicacion } from '../../models/publicacion';
-import { Usuario } from '../../models/usuario';
 import { AutenticacionService } from '../../services/autenticacion.service';
 import { PublicacionesService } from '../../services/publicaciones.service';
 
@@ -29,7 +28,7 @@ readonly publicacionForm = this.formBuilder.nonNullable.group({
     titulo: ['', Validators.required],
     descripcion: ['', Validators.required],
   });
-usuarioActual: Usuario | null = this.autenticacionService.obtenerSesion();
+readonly usuarioActual = this.autenticacionService.usuarioActual;
 orden: OrdenPublicaciones = 'fecha';
 offset = 0;
 readonly limit = 5;
@@ -66,14 +65,14 @@ paginaSiguiente(): void {
   }
 
 cambiarMeGusta(publicacion: Publicacion): void {
-    const usuarioId = this.usuarioActual?._id;
+    const usuarioId = this.usuarioActual()?._id;
 
     if (!usuarioId) {
       this.mostrarModal('error', 'Tenes que iniciar sesion para dar me gusta.');
       return;
     }
 
-    const yaDioMeGusta = publicacion.usuariosMeGusta.includes(usuarioId);
+    const yaDioMeGusta = (publicacion.usuariosMeGusta ?? []).includes(usuarioId);
     const request = yaDioMeGusta
       ? this.publicacionesService.quitarMeGusta(publicacion._id, usuarioId)
       : this.publicacionesService.darMeGusta(publicacion._id, usuarioId);
@@ -91,7 +90,9 @@ cambiarMeGusta(publicacion: Publicacion): void {
   }
 
 eliminarPublicacion(publicacion: Publicacion): void {
-    if (!this.usuarioActual) {
+    const usuario = this.usuarioActual();
+
+    if (!usuario) {
       this.mostrarModal('error', 'Tenes que iniciar sesion para eliminar publicaciones.');
       return;
     }
@@ -102,7 +103,7 @@ eliminarPublicacion(publicacion: Publicacion): void {
       return;
     }
 
-    this.publicacionesService.eliminar(publicacion._id, this.usuarioActual).subscribe({
+    this.publicacionesService.eliminar(publicacion._id, usuario).subscribe({
       next: () => {
         this.publicaciones = this.publicaciones.filter((item) => item._id !== publicacion._id);
         this.mostrarModal('exito', 'Publicacion eliminada correctamente.');
@@ -131,7 +132,7 @@ crearPublicacion(): void {
       return;
     }
 
-    const usuarioId = this.usuarioActual?._id;
+    const usuarioId = this.usuarioActual()?._id;
 
     if (!usuarioId) {
       this.mostrarModal('error', 'Tenes que iniciar sesion para crear una publicacion.');

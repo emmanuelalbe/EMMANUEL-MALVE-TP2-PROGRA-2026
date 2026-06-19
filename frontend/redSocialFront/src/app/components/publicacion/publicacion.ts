@@ -23,15 +23,16 @@ comentariosExpandidos = false;
 
 get dioMeGusta(): boolean {
     const usuarioId = this.usuarioActual?._id;
-    return usuarioId ? this.publicacion.usuariosMeGusta.includes(usuarioId) : false;
+    const meGustas = this.publicacion.usuariosMeGusta ?? [];
+    return !!usuarioId && meGustas.includes(usuarioId);
   }
 
 get puedeEliminar(): boolean {
     const usuarioId = this.usuarioActual?._id;
+    const autorId = this.publicacion.usuario?._id;
     return (
       !!usuarioId &&
-      (this.publicacion.usuario._id === usuarioId ||
-        this.usuarioActual?.perfil === 'administrador')
+      (!!autorId && autorId === usuarioId || this.usuarioActual?.perfil === 'administrador')
     );
   }
 
@@ -50,13 +51,14 @@ ocultarImagenRota(): void {
   }
 
 get comentariosVisibles() {
+    const comentarios = this.publicacion.comentarios ?? [];
     return this.comentariosExpandidos
-      ? this.publicacion.comentarios
-      : this.publicacion.comentarios.slice(0, this.maxComentariosVisibles);
+      ? comentarios
+      : comentarios.slice(0, this.maxComentariosVisibles);
   }
 
 get hayMasComentarios(): boolean {
-    return this.publicacion.comentarios.length > this.maxComentariosVisibles;
+    return (this.publicacion.comentarios ?? []).length > this.maxComentariosVisibles;
   }
 
 alternarComentarios(): void {
