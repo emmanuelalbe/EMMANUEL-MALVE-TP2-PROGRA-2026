@@ -12,12 +12,20 @@ import {
   MensajeModalComponent,
   ModalTipo,
 } from '../../components/mensaje-modal/mensaje-modal';
+import { AdministradorBadgeDirective } from '../../directives/administrador-badge.directive';
+import { UsuarioBadgeDirective } from '../../directives/usuario-badge.directive';
 import { PerfilUsuario, Usuario } from '../../models/usuario';
 import { UsuariosService } from '../../services/usuarios.service';
 
 @Component({
   selector: 'app-dashboard-usuarios',
-  imports: [DatePipe, MensajeModalComponent, ReactiveFormsModule],
+  imports: [
+    AdministradorBadgeDirective,
+    DatePipe,
+    MensajeModalComponent,
+    ReactiveFormsModule,
+    UsuarioBadgeDirective,
+  ],
   templateUrl: './dashboard-usuarios.html',
   styleUrl: './dashboard-usuarios.css',
 })

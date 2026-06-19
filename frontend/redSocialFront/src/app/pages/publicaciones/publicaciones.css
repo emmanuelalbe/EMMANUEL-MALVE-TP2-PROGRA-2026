@@ -2,6 +2,10 @@
   min-width: 220px;
 }
 
+.publicaciones-cargando {
+  min-height: 200px;
+}
+
 .publicaciones-listado {
   display: grid;
   gap: 1.25rem;

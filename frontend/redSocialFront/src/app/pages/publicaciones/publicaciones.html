@@ -50,7 +50,12 @@
 }
 
 @if (cargando) {
-  <div class="alert alert-info">Cargando publicaciones...</div>
+  <div class="publicaciones-cargando d-flex flex-column align-items-center justify-content-center">
+    <div class="spinner-border text-primary mb-3" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="text-secondary mb-0">Cargando publicaciones...</p>
+  </div>
 }
 
 @if (!cargando && publicaciones.length === 0 && !errorCarga) {

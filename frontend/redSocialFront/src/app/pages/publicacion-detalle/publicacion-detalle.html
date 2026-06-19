@@ -33,7 +33,7 @@
 
       <p class="text-secondary small mb-3">
         {{ publicacion.usuario.nombre }} {{ publicacion.usuario.apellido }}
-        · {{ publicacion.fechaCreacion | date: 'short' }}
+        · {{ publicacion.fechaCreacion | fechaPublicacion }}
       </p>
 
       <p class="mb-4">{{ publicacion.descripcion }}</p>
@@ -65,7 +65,7 @@
             } @else {
               <p class="mb-1">{{ comentario.texto }}</p>
               <p class="text-secondary small mb-2">
-                {{ comentario.usuario.nombre }} · {{ comentario.fecha | date: 'short' }}
+                {{ comentario.usuario.nombre }} · {{ comentario.fecha | fechaPublicacion }}
                 @if (comentario.modificado) {
                   · <span class="text-warning">editado</span>
                 }

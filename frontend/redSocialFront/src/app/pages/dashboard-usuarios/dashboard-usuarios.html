@@ -159,9 +159,11 @@
                 <td>@{{ usuario.nombreUsuario }}</td>
                 <td>{{ usuario.correo }}</td>
                 <td>
-                  <span class="badge" [class.text-bg-danger]="usuario.perfil === 'administrador'" [class.text-bg-secondary]="usuario.perfil !== 'administrador'">
-                    {{ usuario.perfil }}
-                  </span>
+                  @if (usuario.perfil === 'administrador') {
+                    <span appAdministradorBadge>{{ usuario.perfil }}</span>
+                  } @else {
+                    <span appUsuarioBadge>{{ usuario.perfil }}</span>
+                  }
                 </td>
                 <td>
                   <span class="badge" [class.text-bg-success]="estaHabilitado(usuario)" [class.text-bg-warning]="!estaHabilitado(usuario)">
