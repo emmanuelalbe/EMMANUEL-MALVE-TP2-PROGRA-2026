@@ -1,0 +1,163 @@
+<div class="mb-4">
+  <h1 class="h3 mb-1">Dashboard de estadisticas</h1>
+  <p class="text-secondary mb-0">Graficos de actividad de la red social.</p>
+</div>
+
+<div class="row g-4">
+  <div class="col-12 col-xl-6">
+    <section class="card shadow-sm h-100">
+      <div class="card-body">
+        <h2 class="h5 mb-3">Publicaciones por usuario</h2>
+
+        <div class="row g-2 align-items-end mb-3">
+          <div class="col-md-4">
+            <label class="form-label" for="desdePublicaciones">Desde</label>
+            <input
+              class="form-control"
+              id="desdePublicaciones"
+              type="date"
+              [(ngModel)]="rangoPublicaciones.desde"
+            />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label" for="hastaPublicaciones">Hasta</label>
+            <input
+              class="form-control"
+              id="hastaPublicaciones"
+              type="date"
+              [(ngModel)]="rangoPublicaciones.hasta"
+            />
+          </div>
+          <div class="col-md-4">
+            <button
+              class="btn btn-primary w-100"
+              type="button"
+              [disabled]="cargandoPublicaciones"
+              (click)="cargarPublicacionesPorUsuario()"
+            >
+              Actualizar
+            </button>
+          </div>
+        </div>
+
+        <div class="grafico-contenedor">
+          @if (cargandoPublicaciones) {
+            <div class="estadisticas-cargando d-flex justify-content-center">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+              </div>
+            </div>
+          }
+          <canvas #graficoPublicaciones aria-label="Grafico de torta de publicaciones por usuario"></canvas>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="col-12 col-xl-6">
+    <section class="card shadow-sm h-100">
+      <div class="card-body">
+        <h2 class="h5 mb-3">Comentarios por periodo</h2>
+
+        <div class="row g-2 align-items-end mb-3">
+          <div class="col-md-4">
+            <label class="form-label" for="desdeComentariosPeriodo">Desde</label>
+            <input
+              class="form-control"
+              id="desdeComentariosPeriodo"
+              type="date"
+              [(ngModel)]="rangoComentariosPeriodo.desde"
+            />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label" for="hastaComentariosPeriodo">Hasta</label>
+            <input
+              class="form-control"
+              id="hastaComentariosPeriodo"
+              type="date"
+              [(ngModel)]="rangoComentariosPeriodo.hasta"
+            />
+          </div>
+          <div class="col-md-4">
+            <button
+              class="btn btn-primary w-100"
+              type="button"
+              [disabled]="cargandoComentariosPeriodo"
+              (click)="cargarComentariosPorPeriodo()"
+            >
+              Actualizar
+            </button>
+          </div>
+        </div>
+
+        <div class="grafico-contenedor">
+          @if (cargandoComentariosPeriodo) {
+            <div class="estadisticas-cargando d-flex justify-content-center">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+              </div>
+            </div>
+          }
+          <canvas #graficoComentariosPeriodo aria-label="Grafico de lineas de comentarios por periodo"></canvas>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="col-12">
+    <section class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="h5 mb-3">Comentarios por publicacion</h2>
+
+        <div class="row g-2 align-items-end mb-3">
+          <div class="col-md-4">
+            <label class="form-label" for="desdeComentariosPublicacion">Desde</label>
+            <input
+              class="form-control"
+              id="desdeComentariosPublicacion"
+              type="date"
+              [(ngModel)]="rangoComentariosPublicacion.desde"
+            />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label" for="hastaComentariosPublicacion">Hasta</label>
+            <input
+              class="form-control"
+              id="hastaComentariosPublicacion"
+              type="date"
+              [(ngModel)]="rangoComentariosPublicacion.hasta"
+            />
+          </div>
+          <div class="col-md-4">
+            <button
+              class="btn btn-primary w-100"
+              type="button"
+              [disabled]="cargandoComentariosPublicacion"
+              (click)="cargarComentariosPorPublicacion()"
+            >
+              Actualizar
+            </button>
+          </div>
+        </div>
+
+        <div class="grafico-contenedor grafico-contenedor-ancho">
+          @if (cargandoComentariosPublicacion) {
+            <div class="estadisticas-cargando d-flex justify-content-center">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+              </div>
+            </div>
+          }
+          <canvas #graficoComentariosPublicacion aria-label="Grafico de barras de comentarios por publicacion"></canvas>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<app-mensaje-modal
+  [visible]="modalVisible"
+  [tipo]="modalTipo"
+  [mensaje]="modalMensaje"
+  (cerrar)="cerrarModal()"
+/>

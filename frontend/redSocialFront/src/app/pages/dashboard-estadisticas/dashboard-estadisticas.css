@@ -1,0 +1,16 @@
+.grafico-contenedor {
+  position: relative;
+  height: 320px;
+}
+
+.grafico-contenedor-ancho {
+  height: 360px;
+}
+
+.estadisticas-cargando {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.85);
+}

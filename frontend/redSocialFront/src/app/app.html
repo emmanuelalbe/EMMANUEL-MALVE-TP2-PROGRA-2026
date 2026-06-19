@@ -8,6 +8,7 @@
         <a class="nav-link" routerLink="/mi-perfil" routerLinkActive="active">Mi perfil</a>
         @if (esAdministrador) {
           <a class="nav-link" routerLink="/dashboard/usuarios" routerLinkActive="active">Usuarios</a>
+          <a class="nav-link" routerLink="/dashboard/estadisticas" routerLinkActive="active">Estadisticas</a>
         }
         <button class="btn btn-link nav-link" type="button" (click)="cerrarSesion()">Cerrar sesion</button>
       } @else {
