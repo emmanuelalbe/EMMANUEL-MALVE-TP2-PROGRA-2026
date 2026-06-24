@@ -2,6 +2,9 @@ import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import {
+  AuthFooterComponent,
+} from '../../components/auth-footer/auth-footer';
+import {
   MensajeModalComponent,
   ModalTipo,
 } from '../../components/mensaje-modal/mensaje-modal';
@@ -11,7 +14,7 @@ import { SesionService } from '../../services/sesion.service';
 
 @Component({
   selector: 'app-login',
-  imports: [MensajeModalComponent, ReactiveFormsModule, RouterLink],
+  imports: [AuthFooterComponent, MensajeModalComponent, ReactiveFormsModule, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })

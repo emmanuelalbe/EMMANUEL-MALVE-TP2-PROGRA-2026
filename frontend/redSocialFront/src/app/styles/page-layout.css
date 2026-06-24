@@ -1,0 +1,54 @@
+@import './premium-theme.css';
+
+:host {
+  --page-accent: #8b5cf6;
+  --page-accent-strong: #7c3aed;
+  --page-accent-soft: rgba(139, 92, 246, 0.5);
+  --page-accent-glow: rgba(124, 58, 237, 0.22);
+  --page-bg: #0b0b0b;
+
+  display: flex;
+  flex-direction: column;
+  background-color: var(--page-bg);
+  margin-inline: calc(50% - 50vw);
+  padding-inline: calc(50vw - 50%);
+  margin-block: -1.5rem;
+  padding-top: 2.5rem;
+  padding-bottom: 0;
+  min-height: calc(100vh - 56px);
+}
+
+.auth-layout {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+}
+
+.page-content {
+  width: 100%;
+  margin-inline: auto;
+}
+
+:host .card {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+  border: 1px solid var(--page-accent-soft);
+  border-radius: 18px;
+  backdrop-filter: blur(18px);
+  box-shadow:
+    0 0 0 1px rgba(139, 92, 246, 0.08),
+    0 16px 40px rgba(0, 0, 0, 0.45);
+  color: #fff;
+}
+
+:host .card .form-label {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+:host .card h2,
+:host .card h3,
+:host .card h4,
+:host .card h5 {
+  color: #fff;
+}

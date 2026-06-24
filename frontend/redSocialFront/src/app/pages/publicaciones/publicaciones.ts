@@ -1,18 +1,19 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { PublicacionComponent } from '../../components/publicacion/publicacion';
+import { AuthFooterComponent } from '../../components/auth-footer/auth-footer';
 import {
   MensajeModalComponent,
   ModalTipo,
 } from '../../components/mensaje-modal/mensaje-modal';
 import { obtenerMensajeError } from '../../core/http-error';
-import { PublicacionComponent } from '../../components/publicacion/publicacion';
 import { OrdenPublicaciones, Publicacion } from '../../models/publicacion';
 import { AutenticacionService } from '../../services/autenticacion.service';
 import { PublicacionesService } from '../../services/publicaciones.service';
 
 @Component({
   selector: 'app-publicaciones',
-  imports: [MensajeModalComponent, PublicacionComponent, ReactiveFormsModule],
+  imports: [AuthFooterComponent, MensajeModalComponent, PublicacionComponent, ReactiveFormsModule],
   templateUrl: './publicaciones.html',
   styleUrl: './publicaciones.css',
 })

@@ -1,0 +1,6 @@
+@import '../../styles/page-layout.css';
+
+.registro-card {
+  max-width: 1040px;
+  width: 100%;
+}

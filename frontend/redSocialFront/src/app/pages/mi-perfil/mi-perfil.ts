@@ -1,6 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { PublicacionComponent } from '../../components/publicacion/publicacion';
+import { AuthFooterComponent } from '../../components/auth-footer/auth-footer';
 import {
   MensajeModalComponent,
   ModalTipo,
@@ -13,7 +14,7 @@ import { PublicacionesService } from '../../services/publicaciones.service';
 
 @Component({
   selector: 'app-mi-perfil',
-  imports: [DatePipe, MensajeModalComponent, PublicacionComponent],
+  imports: [AuthFooterComponent, DatePipe, MensajeModalComponent, PublicacionComponent],
   templateUrl: './mi-perfil.html',
   styleUrl: './mi-perfil.css',
 })
@@ -21,31 +22,81 @@ export class MiPerfilComponent implements OnInit {
   private readonly autenticacionService = inject(AutenticacionService);
   private readonly publicacionesService = inject(PublicacionesService);
 
-readonly usuarioActual = this.autenticacionService.usuarioActual;
-ultimasPublicaciones: Publicacion[] = [];
-cargando = false;
-errorCarga = false;
-modalVisible = false;
-modalTipo: ModalTipo = 'error';
-modalMensaje = '';
+  readonly usuarioActual = this.autenticacionService.usuarioActual;
+  readonly seguidores = 0;
+  readonly siguiendo = 0;
+
+  ultimasPublicaciones: Publicacion[] = [];
+  cargando = false;
+  errorCarga = false;
+  modalVisible = false;
+  modalTipo: ModalTipo = 'error';
+  modalMensaje = '';
 
   ngOnInit(): void {
     this.cargarUltimasPublicaciones();
   }
 
-imagenPerfilUrl(): string {
+  imagenPerfilUrl(): string {
     return resolverUrlImagen(this.usuarioActual()?.imagenPerfilUrl);
   }
 
-tieneImagenPerfil(): boolean {
+  tieneImagenPerfil(): boolean {
     return tieneImagen(this.usuarioActual()?.imagenPerfilUrl);
   }
 
-cerrarModal(): void {
+  inicialesUsuario(): string {
+    const usuario = this.usuarioActual();
+    if (!usuario) {
+      return '?';
+    }
+
+    const nombre = usuario.nombre?.charAt(0) ?? '';
+    const apellido = usuario.apellido?.charAt(0) ?? '';
+    return `${nombre}${apellido}`.toUpperCase();
+  }
+
+  etiquetaRol(): string {
+    const perfil = this.usuarioActual()?.perfil ?? 'usuario';
+    return perfil === 'administrador' ? 'Administrador' : 'Usuario';
+  }
+
+  cantidadPublicaciones(): number {
+    return this.ultimasPublicaciones.length;
+  }
+
+  editarPerfil(): void {
+    this.mostrarModal('error', 'La edicion de perfil estara disponible proximamente.');
+  }
+
+  async compartirPerfil(): Promise<void> {
+    const usuario = this.usuarioActual();
+    if (!usuario) {
+      return;
+    }
+
+    const url = window.location.href;
+    const titulo = `Perfil de ${usuario.nombre} ${usuario.apellido}`;
+    const texto = `Mira el perfil de @${usuario.nombreUsuario} en Red Social`;
+
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: titulo, text: texto, url });
+        return;
+      }
+
+      await navigator.clipboard.writeText(url);
+      this.mostrarModal('exito', 'Enlace del perfil copiado al portapapeles.');
+    } catch {
+      this.mostrarModal('error', 'No se pudo compartir el perfil.');
+    }
+  }
+
+  cerrarModal(): void {
     this.modalVisible = false;
   }
 
-cambiarMeGusta(publicacion: Publicacion): void {
+  cambiarMeGusta(publicacion: Publicacion): void {
     const usuarioId = this.usuarioActual()?._id;
 
     if (!usuarioId) {
@@ -70,7 +121,7 @@ cambiarMeGusta(publicacion: Publicacion): void {
     });
   }
 
-eliminarPublicacion(publicacion: Publicacion): void {
+  eliminarPublicacion(publicacion: Publicacion): void {
     const usuario = this.usuarioActual();
 
     if (!usuario) {
@@ -95,31 +146,6 @@ eliminarPublicacion(publicacion: Publicacion): void {
         this.mostrarModal('error', obtenerMensajeError(error));
       },
     });
-  }
-
-comentarPublicacion(evento: {
-    publicacion: Publicacion;
-    texto: string;
-  }): void {
-    const usuarioId = this.usuarioActual()?._id;
-
-    if (!usuarioId) {
-      this.mostrarModal('error', 'Tenes que iniciar sesion para comentar.');
-      return;
-    }
-
-    this.publicacionesService
-      .comentar(evento.publicacion._id, usuarioId, evento.texto)
-      .subscribe({
-        next: (publicacionActualizada) => {
-          this.ultimasPublicaciones = this.ultimasPublicaciones.map((item) =>
-            item._id === publicacionActualizada._id ? publicacionActualizada : item,
-          );
-        },
-        error: (error) => {
-          this.mostrarModal('error', obtenerMensajeError(error));
-        },
-      });
   }
 
   private cargarUltimasPublicaciones(): void {

@@ -1,18 +1,15 @@
-<div class="d-flex flex-column flex-md-row justify-content-between gap-3 mb-4">
-  <div>
-    <p class="text-primary fw-bold text-uppercase small mb-1">Administrador</p>
-    <h1 class="h3 mb-1">Dashboard de usuarios</h1>
-    <p class="text-secondary mb-0">Listado y alta de usuarios del sistema.</p>
-  </div>
-</div>
+<div class="page-content dashboard-content dashboard-content--wide">
+  <header class="mb-4">
+    <p class="premium-eyebrow mb-1">Administrador</p>
+    <h1 class="premium-title h3 mb-0">Listado y alta de usuarios del sistema.</h1>
+  </header>
 
-<section class="card shadow-sm mb-4">
-  <div class="card-body">
-    <h2 class="h5 mb-3">Crear usuario</h2>
+  <section class="premium-panel dashboard-panel mb-4">
+    <h2 class="premium-title h5 mb-3">Crear usuario</h2>
 
     <form class="row g-3" [formGroup]="usuarioForm" (ngSubmit)="crearUsuario()" novalidate>
       <div class="col-md-6">
-        <label class="form-label">Nombre</label>
+        <label class="premium-label">Nombre</label>
         <input class="form-control" type="text" formControlName="nombre" />
         @if (showError('nombre', 'required')) {
           <div class="text-danger small mt-1">El nombre es obligatorio.</div>
@@ -20,7 +17,7 @@
       </div>
 
       <div class="col-md-6">
-        <label class="form-label">Apellido</label>
+        <label class="premium-label">Apellido</label>
         <input class="form-control" type="text" formControlName="apellido" />
         @if (showError('apellido', 'required')) {
           <div class="text-danger small mt-1">El apellido es obligatorio.</div>
@@ -28,7 +25,7 @@
       </div>
 
       <div class="col-md-6">
-        <label class="form-label">Correo</label>
+        <label class="premium-label">Correo</label>
         <input class="form-control" type="email" formControlName="correo" placeholder="email@dominio.com" />
         @if (showError('correo', 'required')) {
           <div class="text-danger small mt-1">El correo es obligatorio.</div>
@@ -39,7 +36,7 @@
       </div>
 
       <div class="col-md-6">
-        <label class="form-label">Nombre de usuario</label>
+        <label class="premium-label">Nombre de usuario</label>
         <input class="form-control" type="text" formControlName="nombreUsuario" />
         @if (showError('nombreUsuario', 'required')) {
           <div class="text-danger small mt-1">El nombre de usuario es obligatorio.</div>
@@ -47,7 +44,7 @@
       </div>
 
       <div class="col-md-6">
-        <label class="form-label">Contrasena</label>
+        <label class="premium-label">Contrasena</label>
         <input class="form-control" type="password" formControlName="password" />
         @if (showError('password', 'required')) {
           <div class="text-danger small mt-1">La contrasena es obligatoria.</div>
@@ -60,7 +57,7 @@
       </div>
 
       <div class="col-md-6">
-        <label class="form-label">Repetir contrasena</label>
+        <label class="premium-label">Repetir contrasena</label>
         <input class="form-control" type="password" formControlName="repetirPassword" />
         @if (showError('repetirPassword', 'required')) {
           <div class="text-danger small mt-1">Tenes que repetir la contrasena.</div>
@@ -71,7 +68,7 @@
       </div>
 
       <div class="col-md-6">
-        <label class="form-label">Fecha de nacimiento</label>
+        <label class="premium-label">Fecha de nacimiento</label>
         <input class="form-control" type="date" formControlName="fechaNacimiento" />
         @if (showError('fechaNacimiento', 'required')) {
           <div class="text-danger small mt-1">La fecha de nacimiento es obligatoria.</div>
@@ -79,7 +76,7 @@
       </div>
 
       <div class="col-md-6">
-        <label class="form-label" for="dashboardImagenPerfil">Foto de perfil</label>
+        <label class="premium-label" for="dashboardImagenPerfil">Foto de perfil</label>
         <input
           class="form-control"
           id="dashboardImagenPerfil"
@@ -90,7 +87,7 @@
       </div>
 
       <div class="col-12">
-        <label class="form-label">Perfil</label>
+        <label class="premium-label">Perfil</label>
         <div class="d-flex gap-4">
           <label class="form-check">
             <input class="form-check-input" type="radio" formControlName="perfil" value="usuario" />
@@ -105,7 +102,7 @@
       </div>
 
       <div class="col-12">
-        <label class="form-label">Descripcion breve</label>
+        <label class="premium-label">Descripcion breve</label>
         <textarea
           class="form-control"
           rows="4"
@@ -118,29 +115,27 @@
       </div>
 
       <div class="col-12">
-        <button class="btn btn-primary" type="submit" [disabled]="creando">
+        <button class="premium-btn premium-btn--primary" type="submit" [disabled]="creando">
           {{ creando ? 'Creando usuario...' : 'Crear usuario' }}
         </button>
       </div>
     </form>
-  </div>
-</section>
+  </section>
 
-<section class="card shadow-sm">
-  <div class="card-body">
-    <h2 class="h5 mb-3">Usuarios registrados</h2>
+  <section class="premium-panel dashboard-panel">
+    <h2 class="premium-title h5 mb-3">Usuarios registrados</h2>
 
     @if (cargando) {
-      <div class="alert alert-info">Cargando usuarios...</div>
+      <div class="premium-alert premium-alert--info">Cargando usuarios...</div>
     }
 
     @if (!cargando && usuarios.length === 0) {
-      <div class="alert alert-secondary">Todavia no hay usuarios para mostrar.</div>
+      <div class="premium-alert">Todavia no hay usuarios para mostrar.</div>
     }
 
     @if (!cargando && usuarios.length > 0) {
       <div class="table-responsive">
-        <table class="table table-striped align-middle mb-0">
+        <table class="table table-hover dashboard-table align-middle">
           <thead>
             <tr>
               <th>Nombre</th>
@@ -173,9 +168,9 @@
                 <td>{{ usuario.fechaNacimiento | date: 'longDate' }}</td>
                 <td>
                   <button
-                    class="btn btn-sm"
-                    [class.btn-outline-danger]="estaHabilitado(usuario)"
-                    [class.btn-outline-success]="!estaHabilitado(usuario)"
+                    class="premium-btn btn-sm"
+                    [class.premium-btn--danger]="estaHabilitado(usuario)"
+                    [class.premium-btn--success]="!estaHabilitado(usuario)"
                     type="button"
                     (click)="cambiarHabilitacion(usuario)"
                   >
@@ -188,8 +183,8 @@
         </table>
       </div>
     }
-  </div>
-</section>
+  </section>
+</div>
 
 <app-mensaje-modal
   [visible]="modalVisible"

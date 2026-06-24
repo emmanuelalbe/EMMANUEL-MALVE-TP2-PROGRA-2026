@@ -1,10 +1,29 @@
+@import '../../styles/page-layout.css';
+@import '../../styles/dashboard-theme.css';
+
+:host {
+  padding-inline: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  :host {
+    padding-inline: 2rem;
+  }
+}
+
+.dashboard-content--wide {
+  max-width: 1400px;
+  margin-inline: auto;
+  width: 100%;
+}
+
 .form-check {
   align-items: center;
   display: flex;
   gap: 0.4rem;
 }
 
-.table td,
-.table th {
+.dashboard-table td:last-child,
+.dashboard-table th:last-child {
   white-space: nowrap;
 }

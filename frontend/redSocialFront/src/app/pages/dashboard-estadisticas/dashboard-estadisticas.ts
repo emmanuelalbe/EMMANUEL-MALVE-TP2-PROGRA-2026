@@ -22,6 +22,18 @@ import { EstadisticasService } from '../../services/estadisticas.service';
 
 Chart.register(...registerables);
 
+const COLORES_GRAFICO = ['#8b5cf6', '#a78bfa', '#7c3aed', '#c4b5fd', '#6d28d9', '#ddd6fe'];
+
+const OPCIONES_EJES_OSCUROS = {
+  ticks: { color: 'rgba(255, 255, 255, 0.65)' },
+  grid: { color: 'rgba(139, 92, 246, 0.15)' },
+};
+
+const OPCIONES_LEYENDA_OSCURA = {
+  position: 'bottom' as const,
+  labels: { color: 'rgba(255, 255, 255, 0.82)' },
+};
+
 @Component({
   selector: 'app-dashboard-estadisticas',
   imports: [FormsModule, MensajeModalComponent],
@@ -132,7 +144,7 @@ export class DashboardEstadisticasComponent implements AfterViewInit, OnDestroy 
         datasets: [
           {
             data: datos.length > 0 ? datos.map((item) => item.cantidad) : [1],
-            backgroundColor: ['#0d6efd', '#dc3545', '#198754', '#ffc107', '#6f42c1', '#fd7e14'],
+            backgroundColor: COLORES_GRAFICO,
           },
         ],
       },
@@ -140,7 +152,7 @@ export class DashboardEstadisticasComponent implements AfterViewInit, OnDestroy 
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { position: 'bottom' },
+          legend: OPCIONES_LEYENDA_OSCURA,
         },
       },
     };
@@ -167,8 +179,8 @@ export class DashboardEstadisticasComponent implements AfterViewInit, OnDestroy 
           {
             label: 'Comentarios',
             data: datos.length > 0 ? datos.map((item) => item.cantidad) : [0],
-            borderColor: '#0d6efd',
-            backgroundColor: 'rgba(13, 110, 253, 0.15)',
+            borderColor: '#8b5cf6',
+            backgroundColor: 'rgba(139, 92, 246, 0.2)',
             fill: true,
             tension: 0.3,
           },
@@ -177,10 +189,15 @@ export class DashboardEstadisticasComponent implements AfterViewInit, OnDestroy 
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        plugins: {
+          legend: OPCIONES_LEYENDA_OSCURA,
+        },
         scales: {
+          x: OPCIONES_EJES_OSCUROS,
           y: {
+            ...OPCIONES_EJES_OSCUROS,
             beginAtZero: true,
-            ticks: { stepSize: 1 },
+            ticks: { ...OPCIONES_EJES_OSCUROS.ticks, stepSize: 1 },
           },
         },
       },
@@ -208,17 +225,22 @@ export class DashboardEstadisticasComponent implements AfterViewInit, OnDestroy 
           {
             label: 'Comentarios',
             data: datos.length > 0 ? datos.map((item) => item.cantidad) : [0],
-            backgroundColor: '#198754',
+            backgroundColor: '#7c3aed',
           },
         ],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        plugins: {
+          legend: OPCIONES_LEYENDA_OSCURA,
+        },
         scales: {
+          x: OPCIONES_EJES_OSCUROS,
           y: {
+            ...OPCIONES_EJES_OSCUROS,
             beginAtZero: true,
-            ticks: { stepSize: 1 },
+            ticks: { ...OPCIONES_EJES_OSCUROS.ticks, stepSize: 1 },
           },
         },
       },

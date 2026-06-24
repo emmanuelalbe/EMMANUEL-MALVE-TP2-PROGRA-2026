@@ -8,6 +8,9 @@ import {
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import {
+  AuthFooterComponent,
+} from '../../components/auth-footer/auth-footer';
+import {
   MensajeModalComponent,
   ModalTipo,
 } from '../../components/mensaje-modal/mensaje-modal';
@@ -17,7 +20,7 @@ import { SesionService } from '../../services/sesion.service';
 
 @Component({
   selector: 'app-registro',
-  imports: [MensajeModalComponent, ReactiveFormsModule, RouterLink],
+  imports: [AuthFooterComponent, MensajeModalComponent, ReactiveFormsModule, RouterLink],
   templateUrl: './registro.html',
   styleUrl: './registro.css',
 })

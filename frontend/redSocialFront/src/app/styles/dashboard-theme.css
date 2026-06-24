@@ -1,0 +1,119 @@
+.dashboard-content {
+  max-width: 1100px;
+  margin-inline: auto;
+  width: 100%;
+}
+
+.dashboard-panel {
+  padding: 1.35rem;
+}
+
+@media (min-width: 768px) {
+  .dashboard-panel {
+    padding: 1.5rem 1.75rem;
+  }
+}
+
+.dashboard-panel + .dashboard-panel,
+.premium-panel + .premium-panel {
+  margin-top: 1.25rem;
+}
+
+.dashboard-table {
+  --bs-table-bg: transparent;
+  --bs-table-color: #fff;
+  --bs-table-striped-bg: rgba(255, 255, 255, 0.04);
+  --bs-table-striped-color: #fff;
+  --bs-table-hover-bg: rgba(139, 92, 246, 0.1);
+  --bs-table-hover-color: #fff;
+  --bs-table-active-color: #fff;
+  --bs-table-border-color: rgba(139, 92, 246, 0.2);
+  margin-bottom: 0;
+}
+
+.dashboard-table thead th {
+  color: #c4b5fd;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-bottom-color: rgba(139, 92, 246, 0.35);
+  white-space: nowrap;
+}
+
+.dashboard-table tbody td {
+  vertical-align: middle;
+  color: #fff;
+}
+
+:host .form-check-label {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+:host .form-check-input {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(139, 92, 246, 0.45);
+}
+
+:host .form-check-input:checked {
+  background-color: #8b5cf6;
+  border-color: #8b5cf6;
+}
+
+.grafico-contenedor {
+  position: relative;
+  height: 320px;
+  padding: 0.75rem;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(139, 92, 246, 0.18);
+}
+
+.grafico-contenedor-ancho {
+  height: 360px;
+}
+
+.estadisticas-cargando {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background-color: rgba(11, 11, 11, 0.75);
+}
+
+.estadisticas-spinner {
+  color: #8b5cf6;
+}
+
+.premium-btn.btn-sm {
+  min-height: 34px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.82rem;
+}
+
+.premium-btn--danger {
+  border-color: rgba(248, 113, 113, 0.55);
+  color: #fca5a5;
+  background: rgba(248, 113, 113, 0.08);
+}
+
+.premium-btn--danger:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.85);
+  border-color: #ef4444;
+  color: #fff;
+}
+
+.premium-btn--success {
+  border-color: rgba(74, 222, 128, 0.45);
+  color: #86efac;
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.premium-btn--success:hover:not(:disabled) {
+  background: rgba(34, 197, 94, 0.85);
+  border-color: #22c55e;
+  color: #fff;
+}

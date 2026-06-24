@@ -1,69 +1,145 @@
-<h1 class="h3 mb-4">Mi perfil</h1>
+<div class="auth-layout">
+  <div class="page-content perfil-content">
+    @if (!usuarioActual()) {
+      <div class="premium-alert premium-alert--warning">Tenes que iniciar sesion para ver tu perfil.</div>
+    }
 
-@if (!usuarioActual()) {
-  <div class="alert alert-warning">Tenes que iniciar sesion para ver tu perfil.</div>
-}
+    @if (usuarioActual(); as usuario) {
+      <section class="perfil-hero premium-panel">
+        <div class="perfil-banner" aria-hidden="true">
+          <div class="perfil-banner__glow"></div>
+        </div>
 
-@if (usuarioActual(); as usuario) {
-  <section class="card shadow-sm mb-4">
-    <div class="card-body">
-      <div class="d-flex flex-column flex-md-row gap-4">
-        @if (tieneImagenPerfil()) {
-          <img
-            class="perfil-imagen"
-            [src]="imagenPerfilUrl()"
-            [alt]="usuario.nombre + ' ' + usuario.apellido"
-          />
-        } @else {
-          <div class="perfil-imagen perfil-sin-imagen d-flex align-items-center justify-content-center">
-            Sin foto
+        <div class="perfil-avatar-wrap">
+          @if (tieneImagenPerfil()) {
+            <img
+              class="perfil-avatar"
+              [src]="imagenPerfilUrl()"
+              [alt]="usuario.nombre + ' ' + usuario.apellido"
+            />
+          } @else {
+            <div class="perfil-avatar perfil-avatar--fallback" aria-hidden="true">
+              {{ inicialesUsuario() }}
+            </div>
+          }
+        </div>
+
+        <div class="perfil-hero__info">
+          <h1 class="perfil-nombre premium-title h2 mb-1">{{ usuario.nombre }} {{ usuario.apellido }}</h1>
+          <p class="perfil-username mb-2">@{{ usuario.nombreUsuario }}</p>
+
+          <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+            <span class="premium-badge">{{ etiquetaRol() }}</span>
           </div>
+
+          <p class="perfil-descripcion premium-subtitle mb-0">{{ usuario.descripcion }}</p>
+        </div>
+      </section>
+
+      <section class="perfil-datos premium-panel">
+        <div class="perfil-meta-grid">
+          <div class="premium-meta-row">
+            <svg class="premium-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M4 6.5h16v11H7.5L4 19.5V6.5Z"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linejoin="round"
+              />
+              <path d="M4 6.5l8 5 8-5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+            </svg>
+            <span>{{ usuario.correo }}</span>
+          </div>
+
+          <div class="premium-meta-row">
+            <svg class="premium-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="4" y="5.5" width="16" height="14" rx="2" stroke="currentColor" stroke-width="1.6" />
+              <path d="M8 3.5v4M16 3.5v4M4 10.5h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+            </svg>
+            <span>{{ usuario.fechaNacimiento | date: 'longDate' }}</span>
+          </div>
+
+          <div class="premium-meta-row">
+            <svg class="premium-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="8" r="3.5" stroke="currentColor" stroke-width="1.6" />
+              <path
+                d="M5.5 19.5c1.2-3 3.4-4.5 6.5-4.5s5.3 1.5 6.5 4.5"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+              />
+            </svg>
+            <span>{{ etiquetaRol() }}</span>
+          </div>
+        </div>
+
+        <div class="perfil-stats">
+          <div class="premium-stat">
+            <span class="premium-stat__value">{{ cantidadPublicaciones() }}</span>
+            <span class="premium-stat__label">Publicaciones</span>
+          </div>
+          <div class="premium-stat">
+            <span class="premium-stat__value">{{ seguidores }}</span>
+            <span class="premium-stat__label">Seguidores</span>
+          </div>
+          <div class="premium-stat">
+            <span class="premium-stat__value">{{ siguiendo }}</span>
+            <span class="premium-stat__label">Siguiendo</span>
+          </div>
+        </div>
+
+        <div class="perfil-acciones">
+          <button class="premium-btn premium-btn--primary" type="button" (click)="editarPerfil()">
+            <svg class="premium-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M4 18.5h4l9.8-9.8a1.8 1.8 0 0 0-2.5-2.5L5.5 16v2.5Z"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linejoin="round"
+              />
+            </svg>
+            Editar perfil
+          </button>
+          <button class="premium-btn premium-btn--outline" type="button" (click)="compartirPerfil()">
+            <svg class="premium-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M8 12.5 16 7v11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+              <path d="M5 6.5h6v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+            </svg>
+            Compartir perfil
+          </button>
+        </div>
+      </section>
+
+      <section class="perfil-publicaciones">
+        <h2 class="premium-title h4 mb-3">Mis ultimas 3 publicaciones</h2>
+
+        @if (cargando) {
+          <div class="premium-alert premium-alert--info">Cargando publicaciones...</div>
         }
 
-        <div class="flex-grow-1">
-          <h2 class="h4 mb-1">{{ usuario.nombre }} {{ usuario.apellido }}</h2>
-          <p class="text-secondary mb-3">@{{ usuario.nombreUsuario }}</p>
+        @if (!cargando && ultimasPublicaciones.length === 0 && !errorCarga) {
+          <div class="premium-alert">Todavia no tenes publicaciones.</div>
+        }
 
-          <dl class="row mb-0">
-            <dt class="col-sm-4">Correo</dt>
-            <dd class="col-sm-8">{{ usuario.correo }}</dd>
-
-            <dt class="col-sm-4">Fecha de nacimiento</dt>
-            <dd class="col-sm-8">{{ usuario.fechaNacimiento | date: 'longDate' }}</dd>
-
-            <dt class="col-sm-4">Perfil</dt>
-            <dd class="col-sm-8">{{ usuario.perfil }}</dd>
-
-            <dt class="col-sm-4">Descripcion</dt>
-            <dd class="col-sm-8">{{ usuario.descripcion }}</dd>
-          </dl>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <h2 class="h4 mb-3">Mis ultimas 3 publicaciones</h2>
-
-    @if (cargando) {
-      <div class="alert alert-info">Cargando publicaciones...</div>
+        @if (!cargando && ultimasPublicaciones.length > 0) {
+          <div class="publicaciones-listado">
+            @for (publicacion of ultimasPublicaciones; track publicacion._id) {
+              <app-publicacion
+                [publicacion]="publicacion"
+                [usuarioActual]="usuarioActual()"
+                [mostrarComentarios]="true"
+                (cambiarMeGusta)="cambiarMeGusta($event)"
+                (eliminar)="eliminarPublicacion($event)"
+              />
+            }
+          </div>
+        }
+      </section>
     }
+  </div>
 
-    @if (!cargando && ultimasPublicaciones.length === 0 && !errorCarga) {
-      <div class="alert alert-secondary">Todavia no tenes publicaciones.</div>
-    }
-
-    @for (publicacion of ultimasPublicaciones; track publicacion._id) {
-      <app-publicacion
-        [publicacion]="publicacion"
-        [usuarioActual]="usuarioActual()"
-        [mostrarComentarios]="true"
-        (cambiarMeGusta)="cambiarMeGusta($event)"
-        (eliminar)="eliminarPublicacion($event)"
-      />
-    }
-  </section>
-}
+  <app-auth-footer />
+</div>
 
 <app-mensaje-modal
   [visible]="modalVisible"

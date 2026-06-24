@@ -1,21 +1,50 @@
+@import '../../styles/page-layout.css';
+
+.publicaciones-content {
+  max-width: 720px;
+}
+
 .orden-publicaciones {
   min-width: 220px;
 }
 
-.publicaciones-cargando {
-  min-height: 200px;
+.crear-publicacion {
+  padding: 1.35rem;
 }
 
 .publicaciones-listado {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 1.25rem;
+}
+
+.publicaciones-cargando {
+  min-height: 220px;
+}
+
+.publicaciones-spinner {
+  color: #8b5cf6;
 }
 
 .vista-previa-imagen {
   display: block;
   max-width: 100%;
-  max-height: 200px;
+  max-height: 220px;
   object-fit: cover;
-  border-radius: 0.375rem;
-  border: 1px solid #dee2e6;
+  border-radius: 12px;
+  border: 1px solid rgba(139, 92, 246, 0.35);
+}
+
+.paginacion-publicaciones {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.75rem;
+}
+
+.paginacion-publicaciones__info {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.9rem;
+  font-weight: 600;
 }

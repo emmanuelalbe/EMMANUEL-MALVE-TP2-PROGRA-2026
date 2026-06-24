@@ -1,95 +1,105 @@
-<div class="d-flex flex-column flex-md-row justify-content-between gap-3 mb-4">
-  <div>
-    <h1 class="h3 mb-1">Publicaciones</h1>
-  </div>
+<div class="auth-layout">
+  <div class="page-content publicaciones-content">
+    <header class="premium-page-header">
+      <div>
+        <h1 class="premium-title h3 mb-0">Publicaciones</h1>
+      </div>
 
-  <div class="orden-publicaciones">
-    <label class="form-label" for="orden">Ordenar por</label>
-    <select class="form-select" id="orden" [value]="orden" (change)="cambiarOrden($event)">
-      <option value="fecha">Mas recientes</option>
-      <option value="likes">Mas me gusta</option>
-    </select>
-  </div>
-</div>
+      <div class="orden-publicaciones">
+        <label class="premium-label" for="orden">Ordenar por</label>
+        <select class="form-select" id="orden" [value]="orden" (change)="cambiarOrden($event)">
+          <option value="fecha">Mas recientes</option>
+          <option value="likes">Mas me gusta</option>
+        </select>
+      </div>
+    </header>
 
-@if (usuarioActual()) {
-  <section class="card shadow-sm mb-4">
-    <div class="card-body">
-      <h2 class="h5 mb-3">Crear publicacion</h2>
+    @if (usuarioActual()) {
+      <section class="premium-panel crear-publicacion mb-4">
+        <h2 class="premium-title h5 mb-3">Crear publicacion</h2>
 
-      <form class="row g-3" [formGroup]="publicacionForm" (ngSubmit)="crearPublicacion()">
-        <div class="col-md-6">
-          <label class="form-label">Titulo</label>
-          <input class="form-control" type="text" formControlName="titulo" />
-        </div>
+        <form class="row g-3" [formGroup]="publicacionForm" (ngSubmit)="crearPublicacion()">
+          <div class="col-12">
+            <label class="premium-label" for="titulo">Titulo</label>
+            <input class="form-control" id="titulo" type="text" formControlName="titulo" />
+          </div>
 
-        <div class="col-md-6">
-          <label class="form-label">Imagen</label>
-          <input
-            class="form-control"
-            type="file"
-            accept="image/png,image/jpg,image/jpeg"
-            (change)="seleccionarImagenPublicacion($event)"
-          />
-          @if (vistaPreviaImagen) {
-            <img class="vista-previa-imagen mt-2" [src]="vistaPreviaImagen" alt="Vista previa de la imagen" />
-          }
-        </div>
+          <div class="col-12">
+            <label class="premium-label" for="imagen">Imagen</label>
+            <input
+              class="form-control"
+              id="imagen"
+              type="file"
+              accept="image/png,image/jpg,image/jpeg"
+              (change)="seleccionarImagenPublicacion($event)"
+            />
+            @if (vistaPreviaImagen) {
+              <img class="vista-previa-imagen mt-2" [src]="vistaPreviaImagen" alt="Vista previa de la imagen" />
+            }
+          </div>
 
-        <div class="col-12">
-          <label class="form-label">Descripcion</label>
-          <textarea class="form-control" rows="3" formControlName="descripcion"></textarea>
-        </div>
+          <div class="col-12">
+            <label class="premium-label" for="descripcion">Descripcion</label>
+            <textarea class="form-control" id="descripcion" rows="3" formControlName="descripcion"></textarea>
+          </div>
 
-        <div class="col-12">
-          <button class="btn btn-primary" type="submit">Publicar</button>
-        </div>
-      </form>
-    </div>
-  </section>
-}
-
-@if (cargando) {
-  <div class="publicaciones-cargando d-flex flex-column align-items-center justify-content-center">
-    <div class="spinner-border text-primary mb-3" role="status">
-      <span class="visually-hidden">Cargando...</span>
-    </div>
-    <p class="text-secondary mb-0">Cargando publicaciones...</p>
-  </div>
-}
-
-@if (!cargando && publicaciones.length === 0 && !errorCarga) {
-  <div class="alert alert-secondary">Todavia no hay publicaciones para mostrar.</div>
-}
-
-@if (!cargando) {
-  <section class="publicaciones-listado" aria-label="Listado de publicaciones">
-    @for (publicacion of publicaciones; track publicacion._id) {
-      <app-publicacion
-        [publicacion]="publicacion"
-        [usuarioActual]="usuarioActual()"
-        (cambiarMeGusta)="cambiarMeGusta($event)"
-        (eliminar)="eliminarPublicacion($event)"
-      />
+          <div class="col-12">
+            <button class="premium-btn premium-btn--primary" type="submit">Publicar</button>
+          </div>
+        </form>
+      </section>
     }
-  </section>
-}
 
-<div class="d-flex justify-content-between align-items-center mt-4">
-  <button class="btn btn-outline-primary" type="button" [disabled]="offset === 0 || cargando" (click)="paginaAnterior()">
-    Anterior
-  </button>
+    @if (cargando) {
+      <div class="publicaciones-cargando d-flex flex-column align-items-center justify-content-center">
+        <div class="spinner-border publicaciones-spinner mb-3" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+        <p class="premium-subtitle mb-0">Cargando publicaciones...</p>
+      </div>
+    }
 
-  <span class="text-secondary">Pagina {{ paginaActual }}</span>
+    @if (!cargando && publicaciones.length === 0 && !errorCarga) {
+      <div class="premium-alert">Todavia no hay publicaciones para mostrar.</div>
+    }
 
-  <button
-    class="btn btn-outline-primary"
-    type="button"
-    [disabled]="!hayPaginaSiguiente || cargando"
-    (click)="paginaSiguiente()"
-  >
-    Siguiente
-  </button>
+    @if (!cargando && publicaciones.length > 0) {
+      <section class="publicaciones-listado" aria-label="Listado de publicaciones">
+        @for (publicacion of publicaciones; track publicacion._id) {
+          <app-publicacion
+            [publicacion]="publicacion"
+            [usuarioActual]="usuarioActual()"
+            (cambiarMeGusta)="cambiarMeGusta($event)"
+            (eliminar)="eliminarPublicacion($event)"
+          />
+        }
+      </section>
+    }
+
+    <div class="paginacion-publicaciones">
+      <button
+        class="premium-btn premium-btn--ghost"
+        type="button"
+        [disabled]="offset === 0 || cargando"
+        (click)="paginaAnterior()"
+      >
+        Anterior
+      </button>
+
+      <span class="paginacion-publicaciones__info">Pagina {{ paginaActual }}</span>
+
+      <button
+        class="premium-btn premium-btn--ghost"
+        type="button"
+        [disabled]="!hayPaginaSiguiente || cargando"
+        (click)="paginaSiguiente()"
+      >
+        Siguiente
+      </button>
+    </div>
+  </div>
+
+  <app-auth-footer />
 </div>
 
 <app-mensaje-modal

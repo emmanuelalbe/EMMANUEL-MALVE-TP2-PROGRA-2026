@@ -1,4 +1,5 @@
-<section class="card shadow-sm mx-auto" style="max-width: 460px;">
+<div class="auth-layout">
+  <section class="card shadow-sm mx-auto login-card">
   <div class="card-body p-4">
     <p class="text-primary fw-bold text-uppercase small mb-1">Bienvenido</p>
     <h1 class="h3 mb-2">Iniciar sesion</h1>
@@ -40,7 +41,10 @@
 
     <p class="text-secondary mb-0 mt-3">No tenes cuenta? <a routerLink="/registro">Registrate</a></p>
   </div>
-</section>
+  </section>
+
+  <app-auth-footer />
+</div>
 
 <app-mensaje-modal
   [visible]="modalVisible"
